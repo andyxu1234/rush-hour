@@ -1,0 +1,49 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.vite/
+playwright-report/
+test-results/
+*.local
+.DS_Store
+.idea/
+.codebuddy/
+.workbuddy/
+
+# 生成产物 / 临时排查文件
+# 说明：这些都是排查过程中产生的中间产物，一律不进版本库。
+# 命名规律：run-e2e / check-all 等脚本会把日志写成 <name>.log；
+# 手工排查常用 .txt。新增排查文件时请沿用这些后缀，以便自动忽略。
+gen.log
+check.log
+chromelog.txt
+csscheck.log
+dom.txt
+shotlog.txt
+shots.txt
+slices.txt
+probe.txt
+probe2.txt
+sol.txt
+browsers.txt
+FILES.txt
+
+# 任意位置的排查日志（含 run-e2e.mjs 按 name 生成的 <name>.log）
+*.log
+run*.txt
+build-*.txt
+tc.txt
+vt.txt
+vitest-out.txt
+e2e-run.txt
+
+# 生成器残留
+tools/gen_*.txt
+
+# 关卡解答（含每关完整最优解，仅供 CI 交叉校验，不进版本库）
+data/levels.verify.json
+
+# 临时文件
+.status.tmp
+._*.txt

@@ -1,0 +1,3304 @@
+{
+  "schemaVersion": 1,
+  "board": {
+    "cols": 6,
+    "rows": 6,
+    "exitRow": 2,
+    "exitSide": "right"
+  },
+  "generator": {
+    "tool": "tools/rush_hour.py",
+    "seed": 20260920
+  },
+  "levels": [
+    {
+      "id": "t01",
+      "pack": "tutorial",
+      "name": "第1关 · 认识红车：直接开出去",
+      "difficulty": "starter",
+      "par": {
+        "moves": 1,
+        "cellSteps": 1
+      },
+      "stars": {
+        "three": 1,
+        "two": 3,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 3,
+          "r": 3,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 0
+        }
+      ],
+      "metrics": {
+        "reachableStates": 1066,
+        "searchDepth": 6,
+        "rootMoves": 12,
+        "maxBranching": 17,
+        "optimalPaths": 1,
+        "goalStates": 67,
+        "solutionSpaceLog2": 10.1,
+        "idlePieces": 0,
+        "pieces": 5
+      },
+      "index": 1
+    },
+    {
+      "id": "t02",
+      "pack": "tutorial",
+      "name": "第2关 · 第一辆挡路的竖车",
+      "difficulty": "starter",
+      "par": {
+        "moves": 2,
+        "cellSteps": 5
+      },
+      "stars": {
+        "three": 2,
+        "two": 4,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 5
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 3,
+          "r": 5,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 1133,
+        "searchDepth": 6,
+        "rootMoves": 15,
+        "maxBranching": 19,
+        "optimalPaths": 2,
+        "goalStates": 177,
+        "solutionSpaceLog2": 10.1,
+        "idlePieces": 0,
+        "pieces": 5
+      },
+      "index": 2
+    },
+    {
+      "id": "t03",
+      "pack": "tutorial",
+      "name": "第3关 · 拐个弯",
+      "difficulty": "easy",
+      "par": {
+        "moves": 4,
+        "cellSteps": 8
+      },
+      "stars": {
+        "three": 4,
+        "two": 6,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 3,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 0
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 3,
+          "r": 1,
+          "c": 3
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        }
+      ],
+      "metrics": {
+        "reachableStates": 3088,
+        "searchDepth": 6,
+        "rootMoves": 10,
+        "maxBranching": 20,
+        "optimalPaths": 20,
+        "goalStates": 262,
+        "solutionSpaceLog2": 11.6,
+        "idlePieces": 0,
+        "pieces": 6
+      },
+      "index": 3
+    },
+    {
+      "id": "t04",
+      "pack": "tutorial",
+      "name": "第4关 · 竖车当道",
+      "difficulty": "easy",
+      "par": {
+        "moves": 4,
+        "cellSteps": 6
+      },
+      "stars": {
+        "three": 4,
+        "two": 6,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 3,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 16013,
+        "searchDepth": 8,
+        "rootMoves": 17,
+        "maxBranching": 27,
+        "optimalPaths": 24,
+        "goalStates": 1015,
+        "solutionSpaceLog2": 14.0,
+        "idlePieces": 0,
+        "pieces": 7
+      },
+      "index": 4
+    },
+    {
+      "id": "t05",
+      "pack": "tutorial",
+      "name": "第5关 · 竖车当道",
+      "difficulty": "easy",
+      "par": {
+        "moves": 4,
+        "cellSteps": 10
+      },
+      "stars": {
+        "three": 4,
+        "two": 6,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 5
+        }
+      ],
+      "metrics": {
+        "reachableStates": 1909,
+        "searchDepth": 10,
+        "rootMoves": 8,
+        "maxBranching": 18,
+        "optimalPaths": 13,
+        "goalStates": 518,
+        "solutionSpaceLog2": 10.9,
+        "idlePieces": 0,
+        "pieces": 7
+      },
+      "index": 5
+    },
+    {
+      "id": "t06",
+      "pack": "tutorial",
+      "name": "第6关 · 三格长车",
+      "difficulty": "easy",
+      "par": {
+        "moves": 4,
+        "cellSteps": 5
+      },
+      "stars": {
+        "three": 4,
+        "two": 6,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 5
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 5
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 11792,
+        "searchDepth": 8,
+        "rootMoves": 14,
+        "maxBranching": 23,
+        "optimalPaths": 30,
+        "goalStates": 730,
+        "solutionSpaceLog2": 13.5,
+        "idlePieces": 0,
+        "pieces": 8
+      },
+      "index": 6
+    },
+    {
+      "id": "t07",
+      "pack": "tutorial",
+      "name": "第7关 · 三格长车",
+      "difficulty": "easy",
+      "par": {
+        "moves": 5,
+        "cellSteps": 9
+      },
+      "stars": {
+        "three": 5,
+        "two": 7,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 5
+        }
+      ],
+      "metrics": {
+        "reachableStates": 16344,
+        "searchDepth": 9,
+        "rootMoves": 13,
+        "maxBranching": 25,
+        "optimalPaths": 108,
+        "goalStates": 1609,
+        "solutionSpaceLog2": 14.0,
+        "idlePieces": 0,
+        "pieces": 7
+      },
+      "index": 7
+    },
+    {
+      "id": "t08",
+      "pack": "tutorial",
+      "name": "第8关 · 三辆车都要先让开",
+      "difficulty": "easy",
+      "par": {
+        "moves": 6,
+        "cellSteps": 17
+      },
+      "stars": {
+        "three": 6,
+        "two": 8,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 3,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        }
+      ],
+      "metrics": {
+        "reachableStates": 2212,
+        "searchDepth": 12,
+        "rootMoves": 12,
+        "maxBranching": 20,
+        "optimalPaths": 20,
+        "goalStates": 150,
+        "solutionSpaceLog2": 11.1,
+        "idlePieces": 0,
+        "pieces": 7
+      },
+      "index": 8
+    },
+    {
+      "id": "c001",
+      "pack": "classic",
+      "name": "第1关 · 竖车当道（7车/4步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 4,
+        "cellSteps": 8
+      },
+      "stars": {
+        "three": 4,
+        "two": 6,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 3,
+          "r": 1,
+          "c": 5
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 3,
+          "r": 3,
+          "c": 0
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 3,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 5282,
+        "searchDepth": 9,
+        "rootMoves": 14,
+        "maxBranching": 17,
+        "optimalPaths": 9,
+        "goalStates": 288,
+        "solutionSpaceLog2": 12.4,
+        "idlePieces": 0,
+        "pieces": 7
+      },
+      "index": 9
+    },
+    {
+      "id": "c002",
+      "pack": "classic",
+      "name": "第2关 · 竖车当道（7车/4步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 4,
+        "cellSteps": 7
+      },
+      "stars": {
+        "three": 4,
+        "two": 6,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 5
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 13894,
+        "searchDepth": 9,
+        "rootMoves": 15,
+        "maxBranching": 26,
+        "optimalPaths": 6,
+        "goalStates": 699,
+        "solutionSpaceLog2": 13.8,
+        "idlePieces": 0,
+        "pieces": 7
+      },
+      "index": 10
+    },
+    {
+      "id": "c003",
+      "pack": "classic",
+      "name": "第3关 · 三格长车（8车/4步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 4,
+        "cellSteps": 10
+      },
+      "stars": {
+        "three": 4,
+        "two": 6,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 2
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 0
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        }
+      ],
+      "metrics": {
+        "reachableStates": 1164,
+        "searchDepth": 7,
+        "rootMoves": 10,
+        "maxBranching": 16,
+        "optimalPaths": 2,
+        "goalStates": 42,
+        "solutionSpaceLog2": 10.2,
+        "idlePieces": 0,
+        "pieces": 8
+      },
+      "index": 11
+    },
+    {
+      "id": "c004",
+      "pack": "classic",
+      "name": "第4关 · 一路向右（10车/4步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 4,
+        "cellSteps": 5
+      },
+      "stars": {
+        "three": 4,
+        "two": 6,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 2
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 2
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 2
+        },
+        {
+          "id": "h",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 5
+        }
+      ],
+      "metrics": {
+        "reachableStates": 11664,
+        "searchDepth": 10,
+        "rootMoves": 10,
+        "maxBranching": 19,
+        "optimalPaths": 9,
+        "goalStates": 3726,
+        "solutionSpaceLog2": 13.5,
+        "idlePieces": 0,
+        "pieces": 10
+      },
+      "index": 12
+    },
+    {
+      "id": "c005",
+      "pack": "classic",
+      "name": "第5关 · 三格长车（7车/5步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 5,
+        "cellSteps": 10
+      },
+      "stars": {
+        "three": 5,
+        "two": 7,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 3
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 3,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        }
+      ],
+      "metrics": {
+        "reachableStates": 3964,
+        "searchDepth": 12,
+        "rootMoves": 7,
+        "maxBranching": 17,
+        "optimalPaths": 12,
+        "goalStates": 1104,
+        "solutionSpaceLog2": 12.0,
+        "idlePieces": 0,
+        "pieces": 7
+      },
+      "index": 13
+    },
+    {
+      "id": "c006",
+      "pack": "classic",
+      "name": "第6关 · 慢慢挪（8车/5步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 5,
+        "cellSteps": 9
+      },
+      "stars": {
+        "three": 5,
+        "two": 7,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 2
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        }
+      ],
+      "metrics": {
+        "reachableStates": 2108,
+        "searchDepth": 10,
+        "rootMoves": 8,
+        "maxBranching": 18,
+        "optimalPaths": 104,
+        "goalStates": 707,
+        "solutionSpaceLog2": 11.0,
+        "idlePieces": 0,
+        "pieces": 8
+      },
+      "index": 14
+    },
+    {
+      "id": "c007",
+      "pack": "classic",
+      "name": "第7关 · 一路向右（9车/5步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 5,
+        "cellSteps": 10
+      },
+      "stars": {
+        "three": 5,
+        "two": 7,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 3,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 2
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 1
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 4
+        }
+      ],
+      "metrics": {
+        "reachableStates": 3196,
+        "searchDepth": 12,
+        "rootMoves": 10,
+        "maxBranching": 17,
+        "optimalPaths": 36,
+        "goalStates": 768,
+        "solutionSpaceLog2": 11.6,
+        "idlePieces": 0,
+        "pieces": 9
+      },
+      "index": 15
+    },
+    {
+      "id": "c008",
+      "pack": "classic",
+      "name": "第8关 · 一路向右（9车/5步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 5,
+        "cellSteps": 8
+      },
+      "stars": {
+        "three": 5,
+        "two": 7,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 1
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 3,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 5
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 0
+        }
+      ],
+      "metrics": {
+        "reachableStates": 36623,
+        "searchDepth": 9,
+        "rootMoves": 16,
+        "maxBranching": 24,
+        "optimalPaths": 104,
+        "goalStates": 2013,
+        "solutionSpaceLog2": 15.2,
+        "idlePieces": 0,
+        "pieces": 9
+      },
+      "index": 16
+    },
+    {
+      "id": "c009",
+      "pack": "classic",
+      "name": "第9关 · 拐个弯（10车/5步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 5,
+        "cellSteps": 8
+      },
+      "stars": {
+        "three": 5,
+        "two": 7,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 1
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 3
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 5
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 3,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 30967,
+        "searchDepth": 15,
+        "rootMoves": 12,
+        "maxBranching": 25,
+        "optimalPaths": 108,
+        "goalStates": 2016,
+        "solutionSpaceLog2": 14.9,
+        "idlePieces": 0,
+        "pieces": 10
+      },
+      "index": 17
+    },
+    {
+      "id": "c010",
+      "pack": "classic",
+      "name": "第10关 · 竖车当道（10车/6步）",
+      "difficulty": "easy",
+      "par": {
+        "moves": 6,
+        "cellSteps": 12
+      },
+      "stars": {
+        "three": 6,
+        "two": 8,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 4
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 3
+        },
+        {
+          "id": "h",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 3110,
+        "searchDepth": 15,
+        "rootMoves": 6,
+        "maxBranching": 20,
+        "optimalPaths": 2,
+        "goalStates": 373,
+        "solutionSpaceLog2": 11.6,
+        "idlePieces": 0,
+        "pieces": 10
+      },
+      "index": 18
+    },
+    {
+      "id": "c011",
+      "pack": "classic",
+      "name": "第11关 · 五车连环（11车/8步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 8,
+        "cellSteps": 9
+      },
+      "stars": {
+        "three": 8,
+        "two": 10,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 3,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 2
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 5
+        },
+        {
+          "id": "i",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "j",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 28287,
+        "searchDepth": 18,
+        "rootMoves": 8,
+        "maxBranching": 18,
+        "optimalPaths": 75,
+        "goalStates": 9782,
+        "solutionSpaceLog2": 14.8,
+        "idlePieces": 0,
+        "pieces": 11
+      },
+      "index": 19
+    },
+    {
+      "id": "c012",
+      "pack": "classic",
+      "name": "第12关 · 五车连环（11车/8步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 8,
+        "cellSteps": 10
+      },
+      "stars": {
+        "three": 8,
+        "two": 10,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 2
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 3,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 5
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "j",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 5
+        }
+      ],
+      "metrics": {
+        "reachableStates": 6617,
+        "searchDepth": 18,
+        "rootMoves": 9,
+        "maxBranching": 15,
+        "optimalPaths": 144,
+        "goalStates": 676,
+        "solutionSpaceLog2": 12.7,
+        "idlePieces": 0,
+        "pieces": 11
+      },
+      "index": 20
+    },
+    {
+      "id": "c013",
+      "pack": "classic",
+      "name": "第13关 · 错车（12车/8步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 8,
+        "cellSteps": 14
+      },
+      "stars": {
+        "three": 8,
+        "two": 10,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 3,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 2
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 3,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "i",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "j",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 0
+        },
+        {
+          "id": "k",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        }
+      ],
+      "metrics": {
+        "reachableStates": 4193,
+        "searchDepth": 14,
+        "rootMoves": 9,
+        "maxBranching": 14,
+        "optimalPaths": 6,
+        "goalStates": 250,
+        "solutionSpaceLog2": 12.0,
+        "idlePieces": 0,
+        "pieces": 12
+      },
+      "index": 21
+    },
+    {
+      "id": "c014",
+      "pack": "classic",
+      "name": "第14关 · 错车（12车/8步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 8,
+        "cellSteps": 9
+      },
+      "stars": {
+        "three": 8,
+        "two": 10,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 3,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 0
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 5
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "h",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 3
+        },
+        {
+          "id": "i",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "j",
+          "dir": "V",
+          "len": 3,
+          "r": 3,
+          "c": 5
+        },
+        {
+          "id": "k",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 2118,
+        "searchDepth": 12,
+        "rootMoves": 9,
+        "maxBranching": 14,
+        "optimalPaths": 143,
+        "goalStates": 94,
+        "solutionSpaceLog2": 11.0,
+        "idlePieces": 0,
+        "pieces": 12
+      },
+      "index": 22
+    },
+    {
+      "id": "c015",
+      "pack": "classic",
+      "name": "第15关 · 错车（12车/8步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 8,
+        "cellSteps": 9
+      },
+      "stars": {
+        "three": 8,
+        "two": 10,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 3,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 3,
+          "r": 1,
+          "c": 1
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 3,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 3
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "i",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "j",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 4
+        },
+        {
+          "id": "k",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 5
+        }
+      ],
+      "metrics": {
+        "reachableStates": 426,
+        "searchDepth": 12,
+        "rootMoves": 4,
+        "maxBranching": 10,
+        "optimalPaths": 137,
+        "goalStates": 22,
+        "solutionSpaceLog2": 8.7,
+        "idlePieces": 0,
+        "pieces": 12
+      },
+      "index": 23
+    },
+    {
+      "id": "c016",
+      "pack": "classic",
+      "name": "第16关 · 错车（12车/8步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 8,
+        "cellSteps": 13
+      },
+      "stars": {
+        "three": 8,
+        "two": 10,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 5
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 3
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 2
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 1
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "h",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "j",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "k",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 99188,
+        "searchDepth": 25,
+        "rootMoves": 9,
+        "maxBranching": 23,
+        "optimalPaths": 50,
+        "goalStates": 3688,
+        "solutionSpaceLog2": 16.6,
+        "idlePieces": 0,
+        "pieces": 12
+      },
+      "index": 24
+    },
+    {
+      "id": "c017",
+      "pack": "classic",
+      "name": "第17关 · 错车（12车/8步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 8,
+        "cellSteps": 10
+      },
+      "stars": {
+        "three": 8,
+        "two": 10,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 3,
+          "r": 3,
+          "c": 2
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "h",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 5
+        },
+        {
+          "id": "j",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "k",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 1
+        }
+      ],
+      "metrics": {
+        "reachableStates": 49722,
+        "searchDepth": 15,
+        "rootMoves": 10,
+        "maxBranching": 21,
+        "optimalPaths": 684,
+        "goalStates": 5016,
+        "solutionSpaceLog2": 15.6,
+        "idlePieces": 0,
+        "pieces": 12
+      },
+      "index": 25
+    },
+    {
+      "id": "c018",
+      "pack": "classic",
+      "name": "第18关 · 先退后进（13车/8步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 8,
+        "cellSteps": 9
+      },
+      "stars": {
+        "three": 8,
+        "two": 10,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 3,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 3
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 5
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 3,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 2
+        },
+        {
+          "id": "j",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "k",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "l",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        }
+      ],
+      "metrics": {
+        "reachableStates": 12090,
+        "searchDepth": 16,
+        "rootMoves": 11,
+        "maxBranching": 18,
+        "optimalPaths": 18,
+        "goalStates": 1798,
+        "solutionSpaceLog2": 13.6,
+        "idlePieces": 0,
+        "pieces": 13
+      },
+      "index": 26
+    },
+    {
+      "id": "c019",
+      "pack": "classic",
+      "name": "第19关 · 错车（11车/9步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 9,
+        "cellSteps": 13
+      },
+      "stars": {
+        "three": 9,
+        "two": 11,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 3,
+          "r": 2,
+          "c": 5
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 3,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "j",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 0
+        }
+      ],
+      "metrics": {
+        "reachableStates": 2250,
+        "searchDepth": 12,
+        "rootMoves": 10,
+        "maxBranching": 13,
+        "optimalPaths": 72,
+        "goalStates": 144,
+        "solutionSpaceLog2": 11.1,
+        "idlePieces": 0,
+        "pieces": 11
+      },
+      "index": 27
+    },
+    {
+      "id": "c020",
+      "pack": "classic",
+      "name": "第20关 · 先退后进（12车/9步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 9,
+        "cellSteps": 10
+      },
+      "stars": {
+        "three": 9,
+        "two": 11,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "a",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 2
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "h",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 4
+        },
+        {
+          "id": "i",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "j",
+          "dir": "H",
+          "len": 3,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "k",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 5
+        }
+      ],
+      "metrics": {
+        "reachableStates": 2491,
+        "searchDepth": 14,
+        "rootMoves": 6,
+        "maxBranching": 14,
+        "optimalPaths": 120,
+        "goalStates": 487,
+        "solutionSpaceLog2": 11.3,
+        "idlePieces": 0,
+        "pieces": 12
+      },
+      "index": 28
+    },
+    {
+      "id": "c021",
+      "pack": "classic",
+      "name": "第21关 · 先退后进（12车/9步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 9,
+        "cellSteps": 17
+      },
+      "stars": {
+        "three": 9,
+        "two": 11,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 3
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 2
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 3
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 1
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 3,
+          "r": 1,
+          "c": 5
+        },
+        {
+          "id": "h",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 0
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "j",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 1
+        },
+        {
+          "id": "k",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 3
+        }
+      ],
+      "metrics": {
+        "reachableStates": 23602,
+        "searchDepth": 28,
+        "rootMoves": 9,
+        "maxBranching": 18,
+        "optimalPaths": 176,
+        "goalStates": 845,
+        "solutionSpaceLog2": 14.5,
+        "idlePieces": 0,
+        "pieces": 12
+      },
+      "index": 29
+    },
+    {
+      "id": "c022",
+      "pack": "classic",
+      "name": "第22关 · 先退后进（11车/10步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 10,
+        "cellSteps": 17
+      },
+      "stars": {
+        "three": 10,
+        "two": 12,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 3,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 3,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 4
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 3,
+          "r": 3,
+          "c": 0
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 3
+        },
+        {
+          "id": "i",
+          "dir": "H",
+          "len": 3,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "j",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 2
+        }
+      ],
+      "metrics": {
+        "reachableStates": 1306,
+        "searchDepth": 15,
+        "rootMoves": 8,
+        "maxBranching": 13,
+        "optimalPaths": 20,
+        "goalStates": 94,
+        "solutionSpaceLog2": 10.4,
+        "idlePieces": 0,
+        "pieces": 11
+      },
+      "index": 30
+    },
+    {
+      "id": "c023",
+      "pack": "classic",
+      "name": "第23关 · 堵在出口（13车/10步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 10,
+        "cellSteps": 17
+      },
+      "stars": {
+        "three": 10,
+        "two": 12,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 4
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 1
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "j",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "k",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 2
+        },
+        {
+          "id": "l",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 5
+        }
+      ],
+      "metrics": {
+        "reachableStates": 13834,
+        "searchDepth": 18,
+        "rootMoves": 13,
+        "maxBranching": 19,
+        "optimalPaths": 4,
+        "goalStates": 2101,
+        "solutionSpaceLog2": 13.8,
+        "idlePieces": 0,
+        "pieces": 13
+      },
+      "index": 31
+    },
+    {
+      "id": "c024",
+      "pack": "classic",
+      "name": "第24关 · 错车（13车/12步）",
+      "difficulty": "medium",
+      "par": {
+        "moves": 12,
+        "cellSteps": 19
+      },
+      "stars": {
+        "three": 12,
+        "two": 14,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 4
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "c",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 5
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 2
+        },
+        {
+          "id": "f",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 0
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 4
+        },
+        {
+          "id": "h",
+          "dir": "H",
+          "len": 2,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "j",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 4
+        },
+        {
+          "id": "k",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 2
+        },
+        {
+          "id": "l",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 3
+        }
+      ],
+      "metrics": {
+        "reachableStates": 5196,
+        "searchDepth": 18,
+        "rootMoves": 11,
+        "maxBranching": 17,
+        "optimalPaths": 171,
+        "goalStates": 464,
+        "solutionSpaceLog2": 12.3,
+        "idlePieces": 0,
+        "pieces": 13
+      },
+      "index": 32
+    },
+    {
+      "id": "c025",
+      "pack": "classic",
+      "name": "第25关 · 层层设防（13车/13步）",
+      "difficulty": "hard",
+      "par": {
+        "moves": 13,
+        "cellSteps": 21
+      },
+      "stars": {
+        "three": 13,
+        "two": 15,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 0
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 4
+        },
+        {
+          "id": "b",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 3
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 1
+        },
+        {
+          "id": "d",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 2
+        },
+        {
+          "id": "e",
+          "dir": "H",
+          "len": 3,
+          "r": 5,
+          "c": 3
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 1
+        },
+        {
+          "id": "g",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 3
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 0,
+          "c": 5
+        },
+        {
+          "id": "i",
+          "dir": "V",
+          "len": 2,
+          "r": 1,
+          "c": 3
+        },
+        {
+          "id": "j",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 2
+        },
+        {
+          "id": "k",
+          "dir": "H",
+          "len": 2,
+          "r": 1,
+          "c": 1
+        },
+        {
+          "id": "l",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        }
+      ],
+      "metrics": {
+        "reachableStates": 1869,
+        "searchDepth": 22,
+        "rootMoves": 5,
+        "maxBranching": 14,
+        "optimalPaths": 120,
+        "goalStates": 550,
+        "solutionSpaceLog2": 10.9,
+        "idlePieces": 0,
+        "pieces": 13
+      },
+      "index": 33
+    },
+    {
+      "id": "c026",
+      "pack": "classic",
+      "name": "第26关 · 层层设防（12车/14步）",
+      "difficulty": "hard",
+      "par": {
+        "moves": 14,
+        "cellSteps": 17
+      },
+      "stars": {
+        "three": 14,
+        "two": 16,
+        "one": 0
+      },
+      "pieces": [
+        {
+          "id": "R",
+          "dir": "H",
+          "len": 2,
+          "r": 2,
+          "c": 1
+        },
+        {
+          "id": "a",
+          "dir": "H",
+          "len": 3,
+          "r": 1,
+          "c": 1
+        },
+        {
+          "id": "b",
+          "dir": "H",
+          "len": 3,
+          "r": 4,
+          "c": 3
+        },
+        {
+          "id": "c",
+          "dir": "H",
+          "len": 3,
+          "r": 5,
+          "c": 3
+        },
+        {
+          "id": "d",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 2
+        },
+        {
+          "id": "e",
+          "dir": "V",
+          "len": 3,
+          "r": 0,
+          "c": 5
+        },
+        {
+          "id": "f",
+          "dir": "V",
+          "len": 2,
+          "r": 4,
+          "c": 0
+        },
+        {
+          "id": "g",
+          "dir": "V",
+          "len": 2,
+          "r": 3,
+          "c": 2
+        },
+        {
+          "id": "h",
+          "dir": "V",
+          "len": 2,
+          "r": 2,
+          "c": 3
+        },
+        {
+          "id": "i",
+          "dir": "H",
+          "len": 2,
+          "r": 3,
+          "c": 4
+        },
+        {
+          "id": "j",
+          "dir": "H",
+          "len": 2,
+          "r": 0,
+          "c": 0
+        },
+        {
+          "id": "k",
+          "dir": "H",
+          "len": 2,
+          "r": 5,
+          "c": 1
+        }
+      ],
+      "metrics": {
+        "reachableStates": 1609,
+        "searchDepth": 22,
+        "rootMoves": 7,
+        "maxBranching": 11,
+        "optimalPaths": 1099,
+        "goalStates": 40,
+        "solutionSpaceLog2": 10.7,
+        "idlePieces": 0,
+        "pieces": 12
+      },
+      "index": 34
+    }
+  ]
+}

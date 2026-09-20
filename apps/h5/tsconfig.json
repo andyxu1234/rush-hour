@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // 本应用不产出 .d.ts，也不做 project references：
+    // 内部包通过 tsconfig.base.json 的 paths 直接指向源码，
+    // 因此不能设置 rootDir（否则跨包源码会被判为"不在 rootDir 下"）。
+    "noEmit": true,
+    "declaration": false,
+    "composite": false,
+    "types": ["vite/client"]
+  },
+  "include": ["src/**/*.ts", "vite.config.ts"]
+}

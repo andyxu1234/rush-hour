@@ -1,0 +1,14 @@
+{
+  "name": "@rush-hour/minigame",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@rush-hour/core": "0.1.0",
+    "@rush-hour/platform": "0.1.0",
+    "@rush-hour/render": "0.1.0"
+  }
+}

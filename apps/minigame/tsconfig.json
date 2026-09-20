@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // 与小游戏构建一致：无 DOM 之外的宿主假设，仅做类型检查（esbuild 负责产出）
+    "noEmit": true,
+    "declaration": false,
+    "composite": false,
+    "types": []
+  },
+  "include": ["src/**/*.ts", "build.mjs"]
+}

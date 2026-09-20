@@ -1,0 +1,39 @@
+{
+  "name": "rush-hour",
+  "version": "0.1.0",
+  "private": true,
+  "description": "汽车华容道微信小游戏 —— 纯 TypeScript + Canvas 2D，H5 / 小游戏双端",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "node node_modules/vite/bin/vite.js --config apps/h5/vite.config.ts",
+    "build": "npm run build:h5 && npm run build:wx",
+    "build:h5": "node node_modules/vite/bin/vite.js build apps/h5",
+    "build:wx": "node apps/minigame/build.mjs",
+    "preview": "node node_modules/vite/bin/vite.js preview apps/h5 --port 4173",
+    "test": "node node_modules/vitest/vitest.mjs run",
+    "test:watch": "node node_modules/vitest/vitest.mjs",
+    "test:coverage": "node node_modules/vitest/vitest.mjs run --coverage",
+    "verify:levels": "node node_modules/vitest/vitest.mjs run packages/core/test/levels.verify.test.ts",
+    "typecheck": "node node_modules/typescript/bin/tsc -p apps/h5/tsconfig.json --noEmit && node scripts/tsc-minigame.mjs",
+    "lint": "node node_modules/eslint/bin/eslint.js . --ext .ts",
+    "e2e": "node scripts/free-port.mjs 4173 && node node_modules/@playwright/test/cli.js test",
+    "check": "node scripts/check-all.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "@types/node": "^20.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "esbuild": "^0.21.5",
+    "eslint": "^8.57.0",
+    "typescript": "^5.5.3",
+    "vitest": "^1.6.0"
+  }
+}
