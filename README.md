@@ -177,6 +177,28 @@ Actions 产物默认不会自动成为 Pages 站点，需要在仓库里打开�
 之后每次 push 到 `main`（且改动命中 `site/**`、`apps/h5/**`、`packages/**`、`data/**`、
 `scripts/**`、`package.json` 等路径）就会自动重新构建并发布。
 
+> 未开开关就跑到部署步骤会报：
+> `Get Pages site failed ... Not Found`。
+> 见到该错误直接去开开关即可，**不需要改 workflow**。
+>
+> 另外刻意没有使用 `configure-pages` 的 `enablement: true` 来自动开启 Pages ——
+> 该参数要求传入一个「非 `GITHUB_TOKEN`」的凭证（PAT 或 GitHub App token），
+> 默认 token 必然失败。为一次性的开关引入一个长期 PAT，得不偿失。
+
+### Actions 版本与 Node
+
+| Action | 版本 | 运行时 |
+|---|---|---|
+| `actions/checkout` | v5 | Node 24 |
+| `actions/setup-node` | v7 | Node 24 |
+| `actions/configure-pages` | v6 | Node 24 |
+| `actions/upload-pages-artifact` | v5 | Node 24 |
+| `actions/deploy-pages` | v5 | Node 24 |
+
+`setup-node` 里锁的 `node-version: 22` 是**构建脚本自己**用的 Node；上面几个 action
+自身的运行时由它们的版本决定。全部 v5+ 之后不会再出现
+`Node 20 is being deprecated` 的告警。
+
 ### 为什么 H5 放到 `site/play/` 也能跑
 
 H5 构建产物使用**相对路径**（`./game.js`）且车辆贴图按 `assets/cars/*.png` 相对加载，

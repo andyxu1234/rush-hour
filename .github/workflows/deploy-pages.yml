@@ -25,20 +25,29 @@ permissions:
   pages: write
   id-token: write
 
-# 同一时刻只跑一个部署；排队中的旧任务直接取消，避免旧产物覆盖新产物
+# 同一时刻只允许一个 Pages 部署。
+# cancel-in-progress 取 false（与 GitHub 官方 Pages 模板一致）：
+# 部署一旦开始就在改线上站点状态，中途取消可能留下半成品，
+# 因此让新任务排队而不是打断正在跑的部署。
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      # 构建用的 Node 版本。锁 22（LTS）而非 runner 默认的 24：
+      # 本项目 engines 只要求 >=18，22 已足够，留一点版本余量更稳。
+      #
+      # 注意：这里锁的是**我们的构建脚本**用的 Node，与下面几个 action 自身
+      # 运行在哪个 Node 上无关 —— 后者由 action 的版本决定（v5+ 均已升到 Node 24），
+      # 所以不会再出现 "Node 20 is being deprecated" 的告警。
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -56,11 +65,22 @@ jobs:
       - name: Copy game build into site/play
         run: npm run site:play
 
+      # ⚠️ 首次部署前必须先在仓库里手工开启一次 Pages：
+      #      Settings → Pages → Source 选 "GitHub Actions"
+      #
+      # 不在这里用 configure-pages 的 `enablement: true` 自动开启，是因为它
+      # 明确要求传入一个「非 GITHUB_TOKEN」的凭证（PAT 或 GitHub App token），
+      # 默认 token 会失败。为一次性的开关引入一个长期 PAT，得不偿失。
+      #
+      # 若未开启就跑到这一步，会报：
+      #   Get Pages site failed ... Not Found
+      #   （https://docs.github.com/rest/pages/pages#get-a-apiname-pages-site）
+      # 见到该错误直接去开开关，不用改 workflow。
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
@@ -73,4 +93,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
