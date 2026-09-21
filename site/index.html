@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>汽车华容道 · 把红车开出去</title>
+<meta name="description" content="6×6 棋盘滑块解谜：把红车开到右侧出口。纯 TypeScript + Canvas 2D，一套代码同时产出网页版与微信小游戏版，含 34 个内置关卡与 BFS 求解器。">
+<meta property="og:title" content="汽车华容道 · 把红车开出去">
+<meta property="og:description" content="6×6 棋盘滑块解谜 · 纯 TypeScript + Canvas 2D · 一套代码产出 H5 与微信小游戏">
+<meta property="og:image" content="assets/hero.jpg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a class="nav-back" href="https://andyxu1234.github.io/my-profile/">← 作品集</a>
+      <div class="logo">汽车华容道</div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#overview">项目概览</a></li>
+      <li><a href="#features">玩法亮点</a></li>
+      <li><a href="#shots">界面展示</a></li>
+      <li><a href="#cars">车辆图鉴</a></li>
+      <li><a href="#tech">技术架构</a></li>
+      <li><a href="https://github.com/andyxu1234/rush-hour" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ================= Hero ================= -->
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="badge">6×6 滑块解谜 · 纯代码渲染</div>
+      <h1>汽车<em>华容道</em></h1>
+      <p class="hero-sub">
+        把红色小车开到右侧出口，滑动次数越少越好。一辆车滑一次算一步，不论滑了几格 ——
+        所以「先退后进」往往比硬冲更快。
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-red" href="play/">▶ 在线试玩</a>
+        <a class="btn btn-ghost" href="https://github.com/andyxu1234/rush-hour" target="_blank" rel="noopener">查看源码</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <span class="stat-num">34</span>
+          <span class="stat-label">内置关卡</span>
+        </div>
+        <div>
+          <span class="stat-num"><em>1</em> 套</span>
+          <span class="stat-label">代码 · 双端产物</span>
+        </div>
+        <div>
+          <span class="stat-num">0<em> 张</em></span>
+          <span class="stat-label">手写美术（全代码绘制）</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-shot">
+      <img src="assets/hero.jpg" alt="汽车华容道游戏界面示意">
+      <div class="hero-caption">农场主题界面示意 · 木牌面板 + 卵石网格 + 卡通车辆</div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 项目概览 ================= -->
+<section id="overview">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Overview</div>
+      <h2 class="sec-title">项目概览</h2>
+      <p class="sec-desc">背景、方案与关键工程决策</p>
+    </div>
+
+    <div class="ov-meta reveal">
+      <span class="hi">纯 TypeScript · Canvas 2D</span>
+      <span>一套代码 → H5 / 微信小游戏</span>
+      <span>独立开发（玩法 / 求解器 / 渲染 / 工程化）</span>
+    </div>
+
+    <div class="ov-card reveal">
+      <p class="ov-lead">
+        一个 6×6 棋盘的滑块解谜：场上有横竖不同长度的车辆，只能沿自身轴向滑动，
+        目标是<b>把红色小车从右侧第 3 行的出口开出去</b>。计步口径刻意选「滑动次数」
+        而非「滑动格数」—— 一次滑 3 格仍算 1 步，这让最优解常常需要先倒车再前进。
+      </p>
+      <p>
+        工程上的核心目标是<b>同一套代码同时产出网页版与微信小游戏版</b>。为此把整个项目切成
+        四层：纯逻辑内核（规则 / 求解器 / 状态机 / 存档）不依赖任何平台；
+        渲染层只画像素、不碰宿主 API；所有平台能力（画布、存储、音频、图片、广告、分享）
+        收敛到一个冻结的 <code>Platform</code> 接口后面，两端各给一份实现。
+        这使得换端只改一行装配代码，复用率约 95%。
+      </p>
+      <p>
+        关卡不是手摆的，而是由 Python 参考求解器<b>反向游走生成 + BFS 校验最少步数</b>，
+        并用一套「去重指纹」剔掉等价局面。为避免两套实现漂移，CI 里会拿 TypeScript 求解器
+        复算 Python 算出的每一关指标（最少步数、滑动格数、难度、状态数），逐关比对。
+      </p>
+
+      <h3 class="ov-sub">核心工作与亮点</h3>
+      <ul class="ov-list">
+        <li>自研 BFS 求解器：求最少步数、剩余步数、以及「当前最优下一步」用于提示；关卡难度由求解器结果反推，而非人工标注</li>
+        <li>计步模型只有一份事实来源 —— 棋盘状态一律由走子序列重放得出，因此「撤销 = 弹栈」「存档 = 存 moves」「防作弊 = 服务端重放」三件事共用同一份数据，永远不会互相漂移</li>
+        <li>双端渲染零分叉：微信小游戏没有 DOM、禁用 eval，因此渲染层被 ESLint 强制禁止出现 window / document / wx</li>
+        <li>真实的自动化验证：跨语言一致性校验 + 132 个单测 + Playwright 端到端（含带手指抖动的真实触摸手势），一键质量门同时守住类型、测试、包体与产物红线</li>
+        <li>卡通车辆贴图与代码绘制双路径：贴图缺失或加载失败时自动回落为矢量色块车，素材永远不可能让游戏跑不起来</li>
+      </ul>
+
+      <h3 class="ov-sub">技术栈</h3>
+      <div class="chips">
+        <span>TypeScript</span>
+        <span>Canvas 2D</span>
+        <span>npm workspaces</span>
+        <span>Vite</span>
+        <span>esbuild</span>
+        <span>Vitest</span>
+        <span>Playwright</span>
+        <span>ESLint</span>
+        <span>Python（关卡生成）</span>
+        <span>sharp（素材处理）</span>
+      </div>
+    </div>
+
+    <div class="plates reveal">
+      <div class="plate"><img src="assets/labels/关卡.png" alt="关卡木牌"><small>选用：农场少年 · 关卡牌</small></div>
+      <div class="plate"><img src="assets/labels/步数.png" alt="步数木牌"><small>选用：轮胎 · 步数牌</small></div>
+      <div class="plate"><img src="assets/labels/得分.png" alt="得分木牌"><small>选用：卷轴 · 得分牌</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 玩法亮点 ================= -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Gameplay</div>
+      <h2 class="sec-title">玩法与设计亮点</h2>
+      <p class="sec-desc">规则极简，但决策空间不小</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card reveal">
+        <div class="ic">🚗</div>
+        <h3>拖拽即滑动</h3>
+        <p>按住车沿自身轴向拖动，前后画出半透明虚影提示可占位范围；松手吸附到最近合法格。非法方向播放短促回弹，不计步。</p>
+      </div>
+      <div class="card reveal">
+        <div class="ic">🎯</div>
+        <h3>提示只给一步</h3>
+        <p>提示基于求解器算出的<b>当前最优下一步</b>，只揭示该动哪辆车、往哪个方向滑几格，不直接给完整解法 —— 保留思考乐趣。</p>
+      </div>
+      <div class="card reveal">
+        <div class="ic">⭐</div>
+        <h3>星级锚定理论最少步数</h3>
+        <p>三星 = 达到 par（BFS 算出的最少步数），两星 = par + 2 以内，完成即得一星。结算时给出「比最少步数多 N 步」的明确对照。</p>
+      </div>
+      <div class="card reveal">
+        <div class="ic">↩️</div>
+        <h3>撤销 / 重开 / 断点续玩</h3>
+        <p>撤销以走子序列弹栈实现，与存档、防作弊共用同一份数据。切后台或退出后再次进入，会自动重放上次的走子继续玩。</p>
+      </div>
+      <div class="card reveal">
+        <div class="ic">📈</div>
+        <h3>难度由求解器反推</h3>
+        <p>不做人工难度标注：关卡的最少步数、状态空间大小与分支度由求解器算出，据此分档为入门 / 简单 / 中等 / 困难。</p>
+      </div>
+      <div class="card reveal">
+        <div class="ic">🧩</div>
+        <h3>关卡程序化生成</h3>
+        <p>Python 参考实现从终局反向游走生成局面，再用求解器校验「可解且步数落在目标区间」，同时用去重指纹剔掉等价局面。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 界面展示 ================= -->
+<section id="shots" class="shots-sec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Screens</div>
+      <h2 class="sec-title">界面展示</h2>
+      <p class="sec-desc">以下截图全部由脚本从真实运行的构建产物中抓取，非手绘示意</p>
+    </div>
+
+    <div class="gallery">
+      <div class="shot reveal" data-src="assets/shots/menu.png">
+        <img src="assets/shots/menu.png" alt="主菜单">
+        <div class="shot-cap"><b>主菜单</b><small>开始闯关 / 每日挑战 / 排行榜 / 设置</small></div>
+      </div>
+      <div class="shot reveal" data-src="assets/shots/select.png">
+        <img src="assets/shots/select.png" alt="选关页">
+        <div class="shot-cap"><b>选关页</b><small>星级、锁定态与分页</small></div>
+      </div>
+      <div class="shot reveal" data-src="assets/shots/game.png">
+        <img src="assets/shots/game.png" alt="对局页">
+        <div class="shot-cap"><b>对局页</b><small>12 车局面 · 横竖与 3 格长车混合</small></div>
+      </div>
+      <div class="shot reveal" data-src="assets/shots/game-move.png">
+        <img src="assets/shots/game-move.png" alt="滑动中">
+        <div class="shot-cap"><b>滑动反馈</b><small>虚影提示可占位范围</small></div>
+      </div>
+      <div class="shot reveal" data-src="assets/shots/win.png">
+        <img src="assets/shots/win.png" alt="结算弹窗">
+        <div class="shot-cap"><b>结算</b><small>三星判定与最少步数对照</small></div>
+      </div>
+      <div class="shot reveal" data-src="assets/shots/settings.png">
+        <img src="assets/shots/settings.png" alt="设置页">
+        <div class="shot-cap"><b>设置</b><small>音效 / 震动 / 计步口径 / 清档</small></div>
+      </div>
+      <div class="shot reveal" data-src="assets/shots/leaderboard.png">
+        <img src="assets/shots/leaderboard.png" alt="排行榜">
+        <div class="shot-cap"><b>排行榜</b><small>无后端时降级为本地成绩</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 车辆图鉴 ================= -->
+<section id="cars">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Vehicles</div>
+      <h2 class="sec-title">车辆图鉴</h2>
+      <p class="sec-desc">棋盘上只可能出现这 4 种形态；同关内不同车辆颜色互不相同，避免误以为可以互换</p>
+    </div>
+
+    <div class="cars-grid">
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/h-red-rooster.png" alt="红色公鸡跑车"></div>
+        <div class="car-name">红色公鸡跑车</div>
+        <div class="car-role">主角 · 横向 2 格</div>
+        <div class="car-meta">全游戏唯一视觉锚点，必须开到右侧出口</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/h-yellow-sheep.png" alt="黄色咩咩赛车"></div>
+        <div class="car-name">黄色咩咩赛车</div>
+        <div class="car-role">横向 2 格</div>
+        <div class="car-meta">侧视图 · 可左右滑动</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/h-blue-tractor.png" alt="蓝色拖拉机"></div>
+        <div class="car-name">蓝色拖拉机</div>
+        <div class="car-role">横向 2 格</div>
+        <div class="car-meta">侧视图 · 可左右滑动</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/h-pink-pig.png" alt="粉色小猪面包车"></div>
+        <div class="car-name">粉色小猪面包车</div>
+        <div class="car-role">横向 2 格</div>
+        <div class="car-meta">侧视图 · 可左右滑动</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/h-lavender-cat.png" alt="淡紫色猫咪赛车"></div>
+        <div class="car-name">淡紫色猫咪赛车</div>
+        <div class="car-role">横向 2 格</div>
+        <div class="car-meta">侧视图 · 可左右滑动</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/h-purple-bus.png" alt="紫色巴士"></div>
+        <div class="car-name">紫色巴士</div>
+        <div class="car-role">横向 3 格</div>
+        <div class="car-meta">唯一的长车素材，横置时使用</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/v-purple-bus.png" alt="纵向紫色巴士"></div>
+        <div class="car-name">紫色巴士（纵向）</div>
+        <div class="car-role">纵向 3 格</div>
+        <div class="car-meta">同一辆巴士旋转 90° —— 长车的正确形象是长条</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/v-blue-tractor.png" alt="正面拖拉机"></div>
+        <div class="car-name">蓝色拖拉机（正面）</div>
+        <div class="car-role">纵向 2 格</div>
+        <div class="car-meta">车头正视图 · 可上下滑动</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/v-pink-pig.png" alt="正面小猪面包车"></div>
+        <div class="car-name">粉色小猪（正面）</div>
+        <div class="car-role">纵向 2 格</div>
+        <div class="car-meta">车头正视图 · 可上下滑动</div>
+      </div>
+      <div class="car-card reveal">
+        <div class="thumb"><img src="assets/cars/v-lavender-cat.png" alt="正面猫咪赛车"></div>
+        <div class="car-name">淡紫猫咪（正面）</div>
+        <div class="car-role">纵向 2 格</div>
+        <div class="car-meta">车头正视图 · 可上下滑动</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 技术架构 ================= -->
+<section id="tech">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Architecture</div>
+      <h2 class="sec-title">技术架构</h2>
+      <p class="sec-desc">四层单向依赖，平台能力全部收口到一个冻结接口后面</p>
+    </div>
+
+    <div class="tech-grid">
+      <div class="tech-card reveal">
+        <h4>Core · 纯逻辑</h4>
+        <ul>
+          <li>棋盘模型与合法性判定</li>
+          <li>BFS 求解器（最少步数 / 提示）</li>
+          <li>对局状态机 + 星级计算</li>
+          <li>存档结构与其逐项清洗</li>
+        </ul>
+      </div>
+      <div class="tech-card reveal">
+        <h4>Render · 渲染与交互</h4>
+        <ul>
+          <li>Canvas 2D 绘制（车辆 / 棋盘 / HUD）</li>
+          <li>布局几何：绘制、命中、断言三处同源</li>
+          <li>拖拽手势与轻点判定</li>
+          <li>10 个屏幕与导航栈</li>
+        </ul>
+      </div>
+      <div class="tech-card reveal">
+        <h4>Platform · 宿主抽象</h4>
+        <ul>
+          <li>画布 / 存储 / 音频 / 图片</li>
+          <li>指针事件统一为 pointer 语义</li>
+          <li>H5 实现：DOM + localStorage</li>
+          <li>小游戏实现：wx.* API</li>
+        </ul>
+      </div>
+      <div class="tech-card reveal">
+        <h4>Quality · 质量门</h4>
+        <ul>
+          <li>132 个单测（core + render）</li>
+          <li>跨语言一致性：TS 求解器复算 Python 结果</li>
+          <li>Playwright 端到端（含真实触摸手势）</li>
+          <li>包体与产物红线自动断言</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+  <div class="reveal">
+    <div class="sec-tag">Try it</div>
+    <h2>直接开一局</h2>
+    <p>网页版即点即玩，无需安装。开局只有 1 步，走到后面会开始需要「先退后进」。</p>
+    <div class="hero-cta">
+      <a class="btn btn-red" href="play/">▶ 在线试玩</a>
+      <a class="btn btn-ghost" href="https://github.com/andyxu1234/rush-hour" target="_blank" rel="noopener">⭐ GitHub</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-logo">汽车华容道</div>
+  <div class="foot-links">
+    <a href="#overview">项目概览</a>
+    <a href="#features">玩法亮点</a>
+    <a href="#shots">界面展示</a>
+    <a href="#cars">车辆图鉴</a>
+    <a href="#tech">技术架构</a>
+    <a href="https://github.com/andyxu1234/rush-hour" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  <p class="copy">© 2026 汽车华容道 · MIT License · 纯 TypeScript + Canvas 2D</p>
+</footer>
+
+<div class="lightbox" id="lb">
+  <button class="lb-close" aria-label="关闭">✕</button>
+  <img id="lb-img" alt="预览">
+</div>
+
+<script>
+// 导航滚动阴影
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
+
+// 滚动入场
+const io = new IntersectionObserver((es) => {
+  es.forEach((e, i) => {
+    if (!e.isIntersecting) return;
+    setTimeout(() => e.target.classList.add('on'), i * 70);
+    io.unobserve(e.target);
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+// 灯箱
+const lb = document.getElementById('lb');
+const lbImg = document.getElementById('lb-img');
+document.querySelectorAll('.shot').forEach((el) => {
+  el.addEventListener('click', () => {
+    lbImg.src = el.dataset.src;
+    lb.classList.add('on');
+    document.body.style.overflow = 'hidden';
+  });
+});
+const closeLb = () => {
+  lb.classList.remove('on');
+  document.body.style.overflow = '';
+};
+lb.addEventListener('click', closeLb);
+addEventListener('keydown', (e) => e.key === 'Escape' && closeLb());
+</script>
+</body>
+</html>

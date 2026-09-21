@@ -1,0 +1,283 @@
+/* 汽车华容道 · 落地页样式。主题：卡通农场（与游戏美术同源） */
+
+:root {
+  --grass: #7cb342;
+  --grass-dk: #4f7f22;
+  --wood: #8b5e3c;
+  --wood-dk: #6b452a;
+  --wood-lt: #c08552;
+  --cream: #fff8e7;
+  --paper: #fffdf7;
+  --ink: #3a2c20;
+  --ink2: #6b5847;
+  --ink3: #9a8674;
+  --red: #e03131;
+  --red-dk: #a51111;
+  --sky: #a8dadc;
+  --line: rgba(139, 94, 60, 0.14);
+  --shadow: 0 10px 30px -12px rgba(90, 60, 30, 0.3);
+  --display: 'Bahnschrift Condensed', 'DIN Alternate', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --body: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --mono: 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--cream);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.9) 0%, transparent 55%),
+    radial-gradient(circle at 88% 4%, rgba(168, 218, 220, 0.28) 0%, transparent 50%),
+    linear-gradient(180deg, #fffdf7 0%, #f6f2e6 60%, #eef3e4 100%);
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* ---------------- 导航 ---------------- */
+nav {
+  position: fixed; inset: 0 0 auto; z-index: 100;
+  padding: 0.85rem 1.5rem;
+  background: rgba(255, 248, 231, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  transition: box-shadow 0.3s ease, padding 0.3s ease;
+}
+nav.scrolled { padding: 0.55rem 1.5rem; box-shadow: 0 6px 24px -10px rgba(90, 60, 30, 0.35); }
+.nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; }
+.nav-left { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+.nav-back {
+  flex: none; text-decoration: none; font-size: 0.8rem; color: var(--ink2);
+  border: 1px solid var(--line); border-radius: 999px; padding: 0.35rem 0.8rem;
+  background: rgba(255, 255, 255, 0.7); transition: all 0.25s ease; white-space: nowrap;
+}
+.nav-back:hover { color: var(--red); border-color: rgba(224, 49, 49, 0.4); }
+.logo {
+  font-family: var(--display); font-weight: 700; font-size: 1.25rem;
+  color: var(--red); letter-spacing: 0.04em; white-space: nowrap;
+}
+.nav-links { display: flex; gap: 1.5rem; list-style: none; margin-left: auto; }
+.nav-links a {
+  text-decoration: none; color: var(--ink2); font-size: 0.87rem; font-weight: 500;
+  position: relative; transition: color 0.25s ease;
+}
+.nav-links a:hover { color: var(--red); }
+.nav-links a::after {
+  content: ''; position: absolute; left: 0; bottom: -5px; width: 0; height: 2px;
+  background: var(--red); border-radius: 2px; transition: width 0.25s ease;
+}
+.nav-links a:hover::after { width: 100%; }
+
+/* ---------------- Hero ---------------- */
+.hero { padding: 8.5rem 1.5rem 4rem; position: relative; overflow: hidden; }
+.hero::before {
+  content: ''; position: absolute; top: -18%; right: -12%; width: 60%; height: 90%;
+  background: radial-gradient(ellipse, rgba(124, 179, 66, 0.18) 0%, transparent 68%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 3rem; align-items: center;
+}
+.badge {
+  display: inline-block; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--grass-dk); background: rgba(124, 179, 66, 0.13);
+  border: 1px solid rgba(124, 179, 66, 0.3); border-radius: 999px;
+  padding: 0.4rem 1.1rem; margin-bottom: 1.4rem; font-weight: 600;
+}
+.hero h1 {
+  font-family: var(--display); font-size: clamp(2.6rem, 6vw, 4.4rem);
+  line-height: 1.05; letter-spacing: -0.015em; margin-bottom: 1rem;
+}
+.hero h1 em { font-style: normal; color: var(--red); }
+.hero-sub { font-size: clamp(1rem, 1.6vw, 1.15rem); color: var(--ink2); max-width: 33em; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+  font-weight: 700; font-size: 0.95rem; border-radius: 999px; padding: 0.85rem 1.8rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.btn-red {
+  background: linear-gradient(170deg, #f0564f, var(--red) 55%, var(--red-dk));
+  color: #fff; box-shadow: 0 12px 26px -12px rgba(224, 49, 49, 0.8);
+}
+.btn-red:hover { transform: translateY(-3px); box-shadow: 0 18px 34px -12px rgba(224, 49, 49, 0.9); }
+.btn-ghost { background: rgba(255, 255, 255, 0.85); color: var(--ink); border: 1.5px solid var(--line); }
+.btn-ghost:hover { transform: translateY(-3px); border-color: rgba(139, 94, 60, 0.35); }
+
+.hero-stats { display: flex; gap: 2.5rem; flex-wrap: wrap; margin-top: 2.5rem; }
+.stat-num {
+  display: block; font-family: var(--display); font-weight: 700; font-size: 2.3rem;
+  line-height: 1; color: var(--grass-dk);
+}
+.stat-num em { font-style: normal; color: var(--red); }
+.stat-label { font-size: 0.82rem; color: var(--ink3); letter-spacing: 0.06em; margin-top: 0.3rem; }
+
+.hero-shot { position: relative; }
+.hero-shot img {
+  width: 100%; display: block; border-radius: 22px;
+  border: 6px solid #fff; box-shadow: var(--shadow);
+}
+.hero-caption { text-align: center; font-size: 0.78rem; color: var(--ink3); margin-top: 0.8rem; }
+
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .hero { padding-top: 6.5rem; }
+}
+
+/* ---------------- 通用区块 ---------------- */
+section { padding: 4.5rem 1.5rem; }
+.wrap { max-width: 1200px; margin: 0 auto; }
+.sec-head { text-align: center; margin-bottom: 3rem; }
+.sec-tag {
+  display: inline-block; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--grass-dk); border: 1px solid rgba(124, 179, 66, 0.3);
+  border-radius: 6px; padding: 0.3rem 0.7rem; margin-bottom: 0.9rem;
+}
+.sec-title { font-family: var(--display); font-size: clamp(1.9rem, 3.6vw, 2.7rem); letter-spacing: -0.01em; }
+.sec-desc { color: var(--ink2); margin-top: 0.7rem; font-size: 1rem; }
+
+/* ---------------- 概览 ---------------- */
+.ov-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 1.6rem; }
+.ov-meta span {
+  font-size: 0.78rem; color: var(--ink2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.3rem 0.85rem; background: rgba(255, 255, 255, 0.7);
+}
+.ov-meta span.hi { color: var(--red); border-color: rgba(224, 49, 49, 0.35); background: rgba(224, 49, 49, 0.06); }
+.ov-card {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 20px;
+  padding: clamp(1.5rem, 3vw, 2.6rem); box-shadow: var(--shadow);
+}
+.ov-lead { font-size: 1.06rem; line-height: 1.75; margin-bottom: 1.2rem; }
+.ov-card p { color: var(--ink2); margin-bottom: 1em; }
+.ov-sub {
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--grass-dk); margin: 2.2rem 0 1rem;
+}
+.ov-list { list-style: none; display: grid; gap: 0.85rem; }
+.ov-list li { display: flex; gap: 0.75rem; color: var(--ink2); }
+.ov-list li::before {
+  content: ''; flex: none; width: 6px; height: 6px; margin-top: 0.62em;
+  border-radius: 50%; background: var(--red);
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.chips span {
+  font-size: 0.78rem; color: var(--ink2); background: rgba(124, 179, 66, 0.1);
+  border: 1px solid rgba(124, 179, 66, 0.22); border-radius: 6px; padding: 0.3rem 0.65rem;
+  font-family: var(--mono);
+}
+
+/* ---------------- 木牌标签 ---------------- */
+.plates { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.6rem; margin-top: 2.4rem; }
+.plate { text-align: center; }
+.plate img { height: 62px; display: block; filter: drop-shadow(0 6px 10px rgba(90, 60, 30, 0.22)); }
+.plate small { display: block; font-size: 0.75rem; color: var(--ink3); margin-top: 0.5rem; }
+
+/* ---------------- 功能卡 ---------------- */
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.3rem; }
+.card {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 18px;
+  padding: 1.7rem; transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.card:hover { transform: translateY(-6px); box-shadow: var(--shadow); border-color: rgba(124, 179, 66, 0.4); }
+.card .ic {
+  width: 54px; height: 54px; border-radius: 15px; display: grid; place-items: center;
+  font-size: 1.6rem; margin-bottom: 1rem;
+  background: linear-gradient(140deg, rgba(124, 179, 66, 0.16), rgba(224, 49, 49, 0.12));
+}
+.card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+.card p { font-size: 0.9rem; color: var(--ink2); }
+
+/* ---------------- 截图画廊 ---------------- */
+.shots-sec { background: linear-gradient(180deg, rgba(124, 179, 66, 0.07), rgba(168, 218, 220, 0.1)); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.2rem; }
+.shot {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 18px;
+  overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.shot:hover { transform: translateY(-6px) scale(1.015); box-shadow: var(--shadow); }
+.shot img { width: 100%; display: block; aspect-ratio: 9 / 16; object-fit: cover; object-position: top; }
+.shot-cap { padding: 0.8rem 1rem 1rem; }
+.shot-cap b { display: block; font-size: 0.92rem; }
+.shot-cap small { color: var(--ink3); font-size: 0.78rem; }
+
+/* ---------------- 车辆图鉴 ---------------- */
+.cars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.1rem; }
+.car-card {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 18px;
+  padding: 1.4rem 1rem 1.2rem; text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.car-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); border-color: rgba(224, 49, 49, 0.35); }
+.car-card .thumb {
+  height: 84px; display: grid; place-items: center; margin-bottom: 0.9rem;
+}
+.car-card .thumb img { max-height: 84px; max-width: 100%; object-fit: contain; }
+.car-card .thumb.vert img { max-height: 84px; transform: rotate(-90deg); }
+.car-name { font-weight: 700; font-size: 0.95rem; }
+.car-role { font-size: 0.78rem; color: var(--red); margin-top: 0.2rem; font-weight: 600; }
+.car-meta { font-size: 0.75rem; color: var(--ink3); margin-top: 0.35rem; }
+
+/* ---------------- 架构 ---------------- */
+.tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; }
+.tech-card {
+  background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--grass);
+  border-radius: 14px; padding: 1.5rem; transition: transform 0.3s ease;
+}
+.tech-card:nth-child(2) { border-left-color: var(--red); }
+.tech-card:nth-child(3) { border-left-color: #4c6ef5; }
+.tech-card:nth-child(4) { border-left-color: var(--wood-lt); }
+.tech-card:hover { transform: translateX(6px); }
+.tech-card h4 {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 0.9rem;
+}
+.tech-card ul { list-style: none; display: grid; gap: 0.45rem; }
+.tech-card li { font-size: 0.86rem; color: var(--ink2); padding-bottom: 0.45rem; border-bottom: 1px dashed var(--line); }
+.tech-card li:last-child { border-bottom: none; padding-bottom: 0; }
+
+/* ---------------- CTA + 页脚 ---------------- */
+.cta { text-align: center; padding: 5rem 1.5rem; }
+.cta h2 { font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 0.8rem; }
+.cta p { color: var(--ink2); max-width: 36em; margin: 0 auto; }
+.cta .hero-cta { justify-content: center; }
+footer {
+  background: rgba(139, 94, 60, 0.06); border-top: 1px solid var(--line);
+  padding: 2.5rem 1.5rem; text-align: center;
+}
+.foot-logo { font-family: var(--display); font-weight: 700; font-size: 1.4rem; color: var(--red); }
+.foot-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1.4rem; margin: 1.1rem 0; }
+.foot-links a { color: var(--ink2); text-decoration: none; font-size: 0.85rem; }
+.foot-links a:hover { color: var(--red); }
+.copy { font-size: 0.78rem; color: var(--ink3); }
+
+/* ---------------- 灯箱 ---------------- */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 999;
+  background: rgba(40, 26, 14, 0.88); align-items: center; justify-content: center; padding: 2rem;
+}
+.lightbox.on { display: flex; }
+.lightbox img { max-width: 92%; max-height: 92vh; border-radius: 16px; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55); }
+.lb-close {
+  position: absolute; top: 1.5rem; right: 1.5rem; width: 46px; height: 46px;
+  border: none; border-radius: 50%; background: rgba(255, 255, 255, 0.16);
+  color: #fff; font-size: 1.4rem; cursor: pointer; transition: all 0.25s ease;
+}
+.lb-close:hover { background: var(--red); transform: rotate(90deg); }
+
+/* ---------------- 入场动画 ---------------- */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.reveal.on { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+
+@media (max-width: 860px) {
+  .nav-links { display: none; }
+  section { padding: 3.2rem 1.2rem; }
+}
+

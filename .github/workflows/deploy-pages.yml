@@ -1,0 +1,76 @@
+name: Deploy landing page to GitHub Pages
+
+# 只在 main 分支变更「会影响落地页或游戏产物」的路径时触发，
+# 避免改文档 / 改 Python 工具也触发一次全量构建。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'apps/h5/**'
+      - 'packages/**'
+      - 'data/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+# GitHub Pages 部署所需的最小权限
+#   contents: read  —— 读仓库
+#   pages: write    —— 写 Pages
+#   id-token: write —— OIDC 令牌，供 deploy-pages 使用（无需个人 token）
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时刻只跑一个部署；排队中的旧任务直接取消，避免旧产物覆盖新产物
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build car sprites
+        run: npm run assets
+
+      - name: Build landing page assets
+        run: npm run site:assets
+
+      - name: Build H5 game
+        run: npm run build:h5
+
+      - name: Copy game build into site/play
+        run: npm run site:play
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

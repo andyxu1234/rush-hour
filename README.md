@@ -43,6 +43,9 @@ npm run build:wx                 # 产出 apps/minigame/dist/minigame/
 | `npm run lint` | ESLint（强制架构红线，见下） |
 | `npm run e2e` | Playwright 端到端（3 种视口，含真实触摸路径） |
 | `npm run check` | 一键质量门（推荐提交前执行） |
+| `npm run site:build` | 构建落地页 + 试玩产物（`site/`） |
+| `npm run site:serve` | 本地预览落地页（http://localhost:4180） |
+| `npm run site:check` | 落地页冒烟检查 |
 
 ---
 
@@ -95,6 +98,7 @@ rush-hour/
 | 模块 | 内容 |
 |---|---|
 | `theme.ts` | `pickColors()`、`COLORS` / `METRICS` / `FONTS` |
+| `car-art.ts` | `spriteForPiece()`：车型（H/V × 1/2/3 格）→ 贴图名；`loadCarSprites()` 批量加载。**缺图自动回落矢量绘制** |
 | `layout.ts` | `computeLayout()`、`dialogGeometry()`，以及 P4 新增的 `menuLayout()` / `selectLayout()` / `settingsLayout()` / `listLayout()` / `tabsLayout()` / `hitRect()`：全部布局几何（绘制 / 命中检测 / e2e 断言同源） |
 | `anim.ts` | 缓动与动画时长 |
 | `ui.ts` | P4 新增：通用 UI 组件（`drawPanel` / `drawUiButton` / `drawStarRow` / `drawHeader` / `drawEmptyState` / `roundRectPath`） |
@@ -125,6 +129,111 @@ rush-hour/
 `packages/core` 与 `packages/render` 内**禁止**出现 `window` / `document` / `wx` / `localStorage` / `Image` / `eval` / `new Function`，由 ESLint 强制。
 
 平台能力一律通过 `Platform` 接口获取——这是同一套代码能同时编译到 H5 与小游戏的前提（小游戏无 DOM/BOM，且禁用 `eval` / `new Function`）。
+
+> **关于位图**：P2 之后新增了车辆贴图（见「车辆美术」一节）。render 层仍然
+> **不允许**自己构造 `Image`，而是通过 `Platform.image.load()` 拿到 `ImageLike`。
+> H5 用 `new Image()`、小游戏用 `wx.createImage()`，构造方式不同但产物同构——
+> 这正是把图片能力放进 `Platform` 而不是 render 层的原因。
+
+---
+
+## 落地页与 GitHub Pages
+
+`site/` 是项目介绍页（含**可直接试玩的网页版**），由 GitHub Actions 自动部署。
+
+线上地址：`https://andyxu1234.github.io/rush-hour/`
+
+```
+site/
+├── index.html          介绍页（Hero / 项目概览 / 玩法 / 界面展示 / 车辆图鉴 / 架构）
+├── styles.css
+├── assets/
+│   ├── hero.jpg        主视觉（design/design.jpg 压缩稿，2.9MB → 258KB）
+│   ├── labels/         木牌标签（关卡 / 步数 / 得分），已抠除棋盘格背景
+│   ├── cars/           车辆贴图，与游戏内完全一致
+│   └── shots/          7 张真实截图（menu / select / game / game-move / win / settings / leaderboard）
+└── play/               ← 在线试玩，由 npm run site:play 从 apps/h5/dist 拷入（不入库）
+```
+
+常用命令：
+
+| 命令 | 作用 |
+|---|---|
+| `npm run site:build` | 一键：车辆素材 → 落地页素材 → 构建 H5 → 拷进 `site/play/` |
+| `npm run site:serve` | 本地预览，http://localhost:4180 |
+| `npm run site:shots` | 重新抓取截图（需先起 `npm run preview`） |
+| `npm run site:check` | 冒烟检查：图片全部加载、区块齐全、试玩页可启动 |
+
+> **截图不能手画**。`scripts/capture-screens.mjs` 用 Playwright 驱动**真实构建产物**
+> 截图，改 UI 后重跑一次即可，不会出现"页面上的图与实现漂移"。
+> `site:check` 会把 404 的图片、缺失的区块、起不来的试玩页全部拦在部署前。
+
+### 首次部署需要做一次设置
+
+Actions 产物默认不会自动成为 Pages 站点，需要在仓库里打开开关：
+
+**Settings → Pages → Source 选 `GitHub Actions`**
+
+之后每次 push 到 `main`（且改动命中 `site/**`、`apps/h5/**`、`packages/**`、`data/**`、
+`scripts/**`、`package.json` 等路径）就会自动重新构建并发布。
+
+### 为什么 H5 放到 `site/play/` 也能跑
+
+H5 构建产物使用**相对路径**（`./game.js`）且车辆贴图按 `assets/cars/*.png` 相对加载，
+因此放在 `/rush-hour/play/` 这类子路径下无需改任何配置。
+
+---
+
+## 车辆美术（卡通贴图）
+
+棋盘上的车辆使用卡通贴图渲染；**贴图是可选增强，不是运行前提**——任何一张图
+加载失败都会自动回落为 P0–P2 的矢量色块车，因此素材永远不可能让游戏跑不起来。
+
+### 素材流水线
+
+```
+design/assets/*.png                     原始素材（约 4.4MB，含被拍平的棋盘格背景）
+        │
+        │  npm run assets  →  scripts/build-car-assets.mjs
+        │  ① 抠掉"画出来的"透明棋盘格  ② 裁到内容包围盒  ③ 缩放压缩
+        ▼
+packages/render/assets/assets/cars/*.png    发布用贴图（约 124KB）
+        │
+        ├─ H5：Vite publicDir → dist/assets/cars/
+        └─ 小游戏：build.mjs cpSync → assets/cars/
+```
+
+处理脚本解决的两个实际问题（都不是"顺手优化"能省掉的）：
+
+1. **素材的透明区是被画上去的**。原始 PNG 虽然带 alpha 通道，但 alpha 全是
+   `255`——所谓"透明背景"其实是 Photoshop 那种灰白棋盘格像素（`254` / `212`）。
+   不做抠除，棋盘格会跟着车一起画到游戏里。脚本按「低饱和 + 中高亮度」判据
+   清除它，并额外覆盖车身阴影与棋盘格**混合**产生的 `170~215` 中灰
+   （残留会让车底拖出一条棋盘格尾巴）。
+2. **巴士/纵向拖拉机素材里混入了标注文字与邻车**。`sprite_028` 顶部印着
+   `Compact` / `Purple Limo Bus`，`sprite_022` 右侧带邻车边缘，靠 `crop` 显式框出。
+
+### 车型 → 贴图
+
+| 车型 | 贴图 | 说明 |
+|---|---|---|
+| H×2 | 侧视轿车 | 红车（`id==='R'`）**固定**用红色公鸡车，它是唯一视觉锚点 |
+| H×3 | 侧视巴士 | 唯一的横向长车素材 |
+| V×2 | 正面视角轿车/拖拉机 | 车头正视图 |
+| V×3 | **旋转 90° 的巴士** | 长车必须呈现为"长条"，正面车头硬拉到 3 格高会变形 |
+
+尺寸规则（`canvas2d.ts:drawCarSprite`）：横向车以**格高**为基准、纵向车以
+**格宽**为基准，各自按 `len` 变化长度。两类车必须用不同基准轴，否则会出现
+「车比占格小、底部留缝」或「红车变小」——两处都实际踩过。
+
+### 包体
+
+| 项 | 实测 | 上限 |
+|---|---|---|
+| 发布贴图总量 | 124 KB | 150 KB（脚本内断言） |
+| H5 素材 | 124 KB | 300 KB |
+| H5 代码 | 105 KB | 350 KB |
+| 小游戏主包（代码+素材） | 228 KB | 4 MB |
 
 ---
 

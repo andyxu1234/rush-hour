@@ -47,3 +47,7 @@ data/levels.verify.json
 # 临时文件
 .status.tmp
 ._*.txt
+
+# 落地页的"在线试玩"产物：由 npm run site:play 从 apps/h5/dist 拷入，
+# CI 每次部署都会重新生成，因此不入库（避免与源码版本漂移）。
+site/play/
