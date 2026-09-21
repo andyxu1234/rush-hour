@@ -59,6 +59,15 @@ export const DESIGN = { width: 375, height: 667 } as const;
 export const METRICS = {
   /** 棋盘四周留白比例 */
   boardMargin: 0.05,
+  /**
+   * 右侧出口通道占短边的比例。
+   *
+   * 为什么棋盘不能占满可用宽度：出口需要"木栅栏缺口 + 敞开门扇 + 发光箭头 + 出口木牌"
+   * 一条视觉通道（design/design1.jpg）。若棋盘顶到屏幕右边，出口只剩几像素，
+   * 玩家看不出"目标是从右边开出去"。
+   * 该值从**两侧**留白（左右对称），否则会破坏棋盘居中（layout.test / smoke.spec 均断言居中）。
+   */
+  exitLaneRatio: 0.09,
   /** 格子圆角 */
   cellRadius: 8,
   /** 车辆相对格子的内缩（px，逻辑像素） */

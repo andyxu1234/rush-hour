@@ -5,10 +5,23 @@
  *    只允许通过传入的 ctx 与 Layout 工作（.eslintrc.cjs 强制）。
  */
 
-import { COLS, ROWS, EXIT_ROW, type Piece } from '@rush-hour/core';
+import { EXIT_ROW, type Piece } from '@rush-hour/core';
 import type { CanvasRenderingContext2DLike, ImageLike } from '@rush-hour/platform';
-import { CAR_PALETTE, COLORS, FONTS, METRICS, derive, type ColorInfo } from './theme';
-import { cellToPx, dialogGeometry, dialogScale, hudButtons, type Layout } from './layout';
+import { CAR_PALETTE, COLORS, METRICS, derive, type ColorInfo } from './theme';
+import { FARM, cartoonFont } from './farm-theme';
+import {
+  boardFrameWidth,
+  drawBottomControls,
+  drawCartoonText,
+  drawExitGate,
+  drawFarmBackground,
+  drawBoardFrame,
+  drawStoneTiles,
+  drawTopBar,
+  drawWoodPlate,
+  type FarmHud,
+} from './farm-art';
+import { cellToPx, dialogGeometry, dialogScale, type Layout } from './layout';
 
 export interface CarWithOffset {
   piece: Piece;
@@ -94,79 +107,26 @@ function roundRect(
 
 // ---------------------------------------------------------------- 各图层
 
+/**
+ * 背景：卡通农场草地（割草条纹 + 确定性散布的草丛/雏菊/石子）。
+ *
+ * 注意入参仍只有 layout —— 外框厚度由 boardFrameWidth(layout) 内部求出，
+ * 这样 drawBackground / drawBoard / drawExit 三者永远用同一个厚度，
+ * 不会出现"框画在这里、出口开在那里"。
+ */
 export function drawBackground(ctx: CanvasRenderingContext2DLike, layout: Layout): void {
-  ctx.fillStyle = COLORS.bg;
-  ctx.fillRect(0, 0, layout.width, layout.height);
+  drawFarmBackground(ctx, layout, boardFrameWidth(layout));
 }
 
+/** 棋盘：木质外框（含地面投影、铆钉、四角草丛）+ 6×6 裂纹石板砖 */
 export function drawBoard(ctx: CanvasRenderingContext2DLike, layout: Layout): void {
-  const { boardX, boardY, boardSize, cell } = layout;
-  ctx.save();
-  ctx.shadowColor = 'rgba(33,37,41,0.10)';
-  ctx.shadowBlur = Math.max(8, cell * 0.28);
-  ctx.shadowOffsetY = Math.max(2, cell * 0.06);
-  ctx.fillStyle = COLORS.boardBg;
-  roundRect(ctx, boardX, boardY, boardSize, boardSize, Math.max(10, cell * 0.28));
-  ctx.fill();
-  ctx.restore();
-
-  // 格子底色 + 格线
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const { x, y } = cellToPx(layout, r, c);
-      ctx.fillStyle = COLORS.cellBg;
-      roundRect(
-        ctx,
-        x + METRICS.carInset,
-        y + METRICS.carInset,
-        cell - METRICS.carInset * 2,
-        cell - METRICS.carInset * 2,
-        METRICS.cellRadius,
-      );
-      ctx.fill();
-    }
-  }
-  ctx.strokeStyle = COLORS.gridLine;
-  ctx.lineWidth = 1;
-  for (let i = 1; i < COLS; i++) {
-    const x = boardX + i * cell;
-    ctx.beginPath();
-    ctx.moveTo(x, boardY);
-    ctx.lineTo(x, boardY + boardSize);
-    ctx.stroke();
-  }
-  for (let i = 1; i < ROWS; i++) {
-    const y = boardY + i * cell;
-    ctx.beginPath();
-    ctx.moveTo(boardX, y);
-    ctx.lineTo(boardX + boardSize, y);
-    ctx.stroke();
-  }
+  drawBoardFrame(ctx, layout, boardFrameWidth(layout));
+  drawStoneTiles(ctx, layout);
 }
 
-/** 出口：右侧第 2 行的缺口 + 绿色箭头（暗示"从这里开出去"） */
+/** 出口：木栅栏缺口 + 敞开门扇 + 发光绿色箭头 + 「出口」木牌 */
 export function drawExit(ctx: CanvasRenderingContext2DLike, layout: Layout, pulse = 0): void {
-  const { cell } = layout;
-  const y = layout.boardY + EXIT_ROW * cell;
-  const x = layout.boardX + layout.boardSize;
-  const h = cell;
-  ctx.save();
-  // 出口缺口：用背景色盖掉棋盘右边框
-  ctx.fillStyle = COLORS.bg;
-  ctx.fillRect(x - 1, y + 2, Math.max(3, cell * 0.1), h - 4);
-
-  const cx = x + Math.max(10, cell * 0.42);
-  const cy = y + h / 2;
-  const s = Math.max(7, cell * 0.24) + pulse;
-  ctx.fillStyle = COLORS.exit;
-  ctx.globalAlpha = 0.92;
-  ctx.beginPath();
-  ctx.moveTo(cx - s, cy - s);
-  ctx.lineTo(cx + s * 0.6, cy);
-  ctx.lineTo(cx - s, cy + s);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
+  drawExitGate(ctx, layout, boardFrameWidth(layout), EXIT_ROW, pulse);
 }
 
 export function drawCar(
@@ -461,65 +421,44 @@ export function drawHintArrows(
 export interface HudState {
   levelName: string;
   steps: number;
+  /** 理论最少步数（结算弹窗与星级判定仍在使用，HUD 上以"最佳"呈现历史记录） */
   parMoves: number;
   hintLeft: number;
+  /** 历史最佳步数（存档里有记录时展示） */
+  bestMoves?: number;
+  /** 金币 / 体力（商业化占位栏位） */
+  coins?: number;
+  /** 音效开关状态（决定喇叭图标） */
+  soundOn?: boolean;
+  /** 正在播放按下反馈的按钮 id */
+  pressedId?: string | null;
 }
 
+/**
+ * 顶部信息栏 + 底部操作区。
+ *
+ * 拆成两块的原因：顶部是"信息展示"，底部是"操作"，两者的排版权重完全不同
+ * （信息栏要避开微信胶囊安全区，操作区要贴屏幕下缘让拇指够得着）。
+ * 但对外仍是一个 drawHud 调用，屏幕层不必关心内部分层。
+ */
 export function drawHud(
   ctx: CanvasRenderingContext2DLike,
   layout: Layout,
   hud: HudState,
   canUndo: boolean,
 ): void {
-  const pad = layout.boardX;
-  ctx.save();
-  ctx.fillStyle = COLORS.text;
-  ctx.font = FONTS.title;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(hud.levelName, pad, layout.hudHeight * 0.34);
-
-  ctx.font = FONTS.hud;
-  ctx.fillStyle = COLORS.text;
-  ctx.fillText(`步数 ${hud.steps}`, pad, layout.hudHeight * 0.72);
-
-  ctx.font = FONTS.small;
-  ctx.fillStyle = COLORS.textDim;
-  ctx.textAlign = 'right';
-  ctx.fillText(`目标 ${hud.parMoves} 步`, layout.width - pad, layout.hudHeight * 0.72);
-  ctx.restore();
-
-  // 按钮
-  for (const b of hudButtons(layout)) {
-    const disabled = b.id === 'undo' ? !canUndo : false;
-    drawButton(ctx, b.x, b.y, b.w, b.h, b.label, disabled, layout);
-  }
-}
-
-function drawButton(
-  ctx: CanvasRenderingContext2DLike,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  label: string,
-  disabled: boolean,
-  layout: Layout,
-): void {
-  ctx.save();
-  ctx.globalAlpha = disabled ? 0.4 : 1;
-  ctx.fillStyle = COLORS.panel;
-  ctx.strokeStyle = COLORS.panelStroke;
-  ctx.lineWidth = 1.5;
-  roundRect(ctx, x, y, w, h, Math.max(8, layout.cell * 0.24));
-  ctx.fill();
-  ctx.stroke();
-  ctx.fillStyle = COLORS.primary;
-  ctx.font = FONTS.button;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(label, x + w / 2, y + h / 2);
-  ctx.restore();
+  const farmHud: FarmHud = {
+    levelName: hud.levelName,
+    steps: hud.steps,
+    bestMoves: hud.bestMoves,
+    hintLeft: hud.hintLeft,
+    coins: hud.coins,
+    soundOn: hud.soundOn ?? true,
+    canUndo,
+    pressedId: hud.pressedId ?? null,
+  };
+  drawTopBar(ctx, layout, farmHud);
+  drawBottomControls(ctx, layout, farmHud);
 }
 
 // ---------------------------------------------------------------- 结算弹窗
@@ -543,7 +482,7 @@ export function drawResultDialog(
   res: ResultState,
 ): void {
   ctx.save();
-  ctx.fillStyle = COLORS.overlay;
+  ctx.fillStyle = FARM.overlay;
   ctx.fillRect(0, 0, layout.width, layout.height);
 
   const p = Math.min(1, Math.max(0, res.progress));
@@ -560,68 +499,94 @@ export function drawResultDialog(
   ctx.scale(scale, scale);
   ctx.translate(-cx, -cy);
 
-  ctx.fillStyle = COLORS.panel;
-  ctx.shadowColor = 'rgba(0,0,0,0.22)';
-  ctx.shadowBlur = 24;
-  roundRect(ctx, cx - panelW / 2, cy - panelH / 2, panelW, panelH, 18);
-  ctx.fill();
-  ctx.shadowColor = 'rgba(0,0,0,0)';
-  ctx.shadowBlur = 0;
-
+  const left = cx - panelW / 2;
   const top = cy - panelH / 2;
+
+  // —— 木质弹窗：木牌 + 奶白内衬（内衬保证深色文字在任何木纹上都读得清） ——
+  drawWoodPlate(ctx, left, top, panelW, panelH, { radius: 22 });
+  const innerPad = Math.max(6, panelH * 0.04);
+  ctx.save();
+  roundRect(ctx, left + innerPad, top + innerPad, panelW - innerPad * 2, panelH - innerPad * 2, 16);
+  ctx.fillStyle = 'rgba(255,248,232,0.94)';
+  ctx.fill();
+  ctx.restore();
+
   const atPar = res.steps <= res.parMoves;
 
-  // 达 par 时换成特殊文案（docs/01 §6.1「达 par 时特殊文案与特效」）
-  ctx.fillStyle = atPar ? COLORS.exit : COLORS.text;
-  ctx.font = FONTS.title;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(atPar ? '完美通关！' : '过关！', cx, top + panelH * 0.13);
+  // —— 标题：骑在面板上沿的悬挂木牌（达 par 时换成特殊文案，docs/01 §6.1） ——
+  const titleW = Math.min(panelW * 0.66, 230);
+  const titleH = Math.max(30, panelH * 0.135);
+  const titleY = top - titleH * 0.44;
+  drawWoodPlate(ctx, cx - titleW / 2, titleY, titleW, titleH, { radius: titleH * 0.42, nails: false });
+  drawCartoonText(ctx, atPar ? '完美通关！' : '过关！', cx, titleY + titleH / 2, {
+    size: Math.max(14, Math.min(23, titleH * 0.58)),
+    fill: atPar ? FARM.hay : FARM.cream,
+    maxWidth: titleW - 18,
+  });
 
-  // 三颗星
+  // —— 三颗星 ——
   const starR = Math.max(14, layout.cell * 0.34);
   const gap = starR * 2.6;
+  const starY = top + panelH * 0.3;
   for (let i = 0; i < 3; i++) {
-    const sx = cx + (i - 1) * gap;
-    const sy = top + panelH * 0.32;
-    drawStar(ctx, sx, sy, starR, i < res.stars);
+    drawStar(ctx, cx + (i - 1) * gap, starY, starR, i < res.stars);
   }
 
-  ctx.font = FONTS.hud;
-  ctx.fillStyle = COLORS.text;
-  ctx.fillText(`本局 ${res.steps} 步 / 目标 ${res.parMoves} 步`, cx, top + panelH * 0.49);
+  drawCartoonText(ctx, `本局 ${res.steps} 步 / 目标 ${res.parMoves} 步`, cx, top + panelH * 0.49, {
+    size: Math.max(12, Math.min(17, panelH * 0.048)),
+    fill: FARM.ink,
+    stroke: 'rgba(255,248,232,0.9)',
+    outline: Math.max(2, panelH * 0.012),
+    maxWidth: panelW - 30,
+  });
 
   // par 对比（docs/01 §6.1 要求"比最少步数多 3 步"这类表述）
-  ctx.font = FONTS.small;
-  ctx.fillStyle = COLORS.textDim;
   const diff = res.steps - res.parMoves;
   const cmp = diff <= 0 ? '已达最少步数' : `比最少步数多 ${diff} 步`;
-  ctx.fillText(cmp, cx, top + panelH * 0.575);
+  drawCartoonText(ctx, cmp, cx, top + panelH * 0.575, {
+    size: Math.max(11, Math.min(14, panelH * 0.038)),
+    fill: FARM.inkSoft,
+    outline: 0,
+    maxWidth: panelW - 30,
+  });
 
-  // 副行：滑动格数 + 新纪录标记（两者并排，避免行数过多挤压按钮）
+  // 副行：滑动格数 + 新纪录标记
   const subY = top + panelH * 0.645;
-  ctx.fillText(`滑动格数 ${res.cellSteps}`, cx, subY);
+  drawCartoonText(ctx, `滑动格数 ${res.cellSteps}`, cx, subY, {
+    size: Math.max(11, Math.min(14, panelH * 0.038)),
+    fill: FARM.inkSoft,
+    outline: 0,
+    maxWidth: panelW - 30,
+  });
   if (res.isNewBest) {
-    ctx.fillStyle = COLORS.exit;
-    ctx.fillText('新纪录！', cx, subY + panelH * 0.062);
+    drawCartoonText(ctx, '新纪录！', cx, subY + panelH * 0.068, {
+      size: Math.max(12, Math.min(16, panelH * 0.042)),
+      fill: FARM.done,
+      outline: 2,
+      maxWidth: panelW - 30,
+    });
   }
 
-  // 按钮：直接使用 geo.buttons（已含屏幕坐标，处于当前缩放变换内）
+  // —— 按钮：直接使用 geo.buttons（已含屏幕坐标，处于当前缩放变换内） ——
   for (const b of geo.buttons) {
     if (b.id === 'next' && !res.hasNext) continue;
     if (b.id === 'share' && !res.shareEnabled) continue;
     const primary = b.id === 'next';
-    ctx.fillStyle = primary ? COLORS.primary : COLORS.panel;
-    ctx.strokeStyle = primary ? COLORS.primary : COLORS.panelStroke;
-    ctx.lineWidth = 1.5;
-    roundRect(ctx, b.x, b.y, b.w, b.h, 12);
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillStyle = primary ? COLORS.primaryText : COLORS.text;
-    ctx.font = FONTS.small;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(b.label, b.x + b.w / 2, b.y + b.h / 2);
+    drawWoodPlate(ctx, b.x, b.y, b.w, b.h, { radius: Math.min(b.h * 0.34, 14), nails: false });
+    if (primary) {
+      // 主按钮：叠一层金色，在三个木按钮里一眼可辨
+      ctx.save();
+      roundRect(ctx, b.x, b.y, b.w, b.h, Math.min(b.h * 0.34, 14));
+      ctx.fillStyle = 'rgba(255,205,70,0.42)';
+      ctx.fill();
+      ctx.restore();
+    }
+    drawCartoonText(ctx, b.label, b.x + b.w / 2, b.y + b.h / 2, {
+      size: Math.max(11, Math.min(16, b.h * 0.42)),
+      fill: FARM.cream,
+      outline: 2,
+      maxWidth: b.w - 10,
+    });
   }
 
   ctx.restore();
@@ -635,7 +600,8 @@ function drawStar(
   filled: boolean,
 ): void {
   ctx.save();
-  ctx.fillStyle = filled ? COLORS.star : COLORS.starEmpty;
+  // 空星用木色描边（而不是灰块）：在奶白内衬上仍能看出"还差几颗"
+  ctx.fillStyle = filled ? FARM.coin : 'rgba(196,176,140,0.42)';
   ctx.beginPath();
   for (let i = 0; i < 10; i++) {
     const rad = i % 2 === 0 ? r : r * 0.44;
@@ -647,6 +613,11 @@ function drawStar(
   }
   ctx.closePath();
   ctx.fill();
+  if (filled) {
+    ctx.lineWidth = Math.max(1, r * 0.16);
+    ctx.strokeStyle = FARM.coinEdge;
+    ctx.stroke();
+  }
   ctx.restore();
 }
 
@@ -660,24 +631,24 @@ export function drawFlash(ctx: CanvasRenderingContext2DLike, layout: Layout, alp
   ctx.restore();
 }
 
-/** 长按提示气泡文字 */
+/** 长按 / 提示气泡：木牌样式，压在第一道栅栏上方的草地上 */
 export function drawToast(
   ctx: CanvasRenderingContext2DLike,
   layout: Layout,
   text: string,
 ): void {
   ctx.save();
-  ctx.font = FONTS.small;
-  const w = ctx.measureText(text).width + 28;
-  const h = 32;
+  const size = Math.max(12, Math.min(15, layout.width * 0.038));
+  ctx.font = cartoonFont(size, '700');
+  const w = Math.min(layout.width - 24, ctx.measureText(text).width + 34);
+  const h = Math.max(30, size * 2.3);
   const x = (layout.width - w) / 2;
-  const y = layout.hudHeight * 0.5 + 6;
-  ctx.fillStyle = 'rgba(33,37,41,0.86)';
-  roundRect(ctx, x, y, w, h, h / 2);
-  ctx.fill();
-  ctx.fillStyle = '#FFFFFF';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(text, layout.width / 2, y + h / 2);
+  const y = layout.hudHeight + Math.round(layout.height * 0.012);
+  drawWoodPlate(ctx, x, y, w, h, { radius: h * 0.4, grain: false, nails: false });
+  drawCartoonText(ctx, text, layout.width / 2, y + h / 2, {
+    size,
+    maxWidth: w - 16,
+    outline: 2,
+  });
   ctx.restore();
 }

@@ -2,23 +2,23 @@ import { expect, test } from '@playwright/test';
 import { goto, openGame } from './helpers';
 
 /**
- * ÐÂÊÖÒýµ¼ÕÚÕÖ ¡ª¡ª docs/01 ¡ì9¡£
+ * æ–°æ‰‹å¼•å¯¼é®ç½© â€”â€” docs/01 Â§9ã€‚
  *
- * ¹æ¸ñÒªÇó£¨Ô­ÎÄ£©£ºÇ° 3 ¹Ø¼´½ÌÑ§¹Ø£¬ÓÃ**Çé¾³»¯ÕÚÕÖ + ÎÄ°¸**£º
- *   t01£º¡¸ÏòÓÒÍÏ¶¯ºì³µ¿ª³ö³ö¿Ú¡¹
- *   t02£º¡¸Êú³µÖ»ÄÜÉÏÏÂÒÆ¶¯£¬ÏÈ°ÑËüÅ²¿ª¡¹
- *   t03£º¡¸Ò»´ÎÖ»ÄÜ¶¯Ò»Á¾³µ£¬ÏëºÃË³Ðò¡¹
+ * è§„æ ¼è¦æ±‚ï¼ˆåŽŸæ–‡ï¼‰ï¼šå‰ 3 å…³å³æ•™å­¦å…³ï¼Œç”¨**æƒ…å¢ƒåŒ–é®ç½© + æ–‡æ¡ˆ**ï¼š
+ *   t01ï¼šã€Œå‘å³æ‹–åŠ¨çº¢è½¦å¼€å‡ºå‡ºå£ã€
+ *   t02ï¼šã€Œç«–è½¦åªèƒ½ä¸Šä¸‹ç§»åŠ¨ï¼Œå…ˆæŠŠå®ƒæŒªå¼€ã€
+ *   t03ï¼šã€Œä¸€æ¬¡åªèƒ½åŠ¨ä¸€è¾†è½¦ï¼Œæƒ³å¥½é¡ºåºã€
  *
- * ÖØµãÊØÈýÌõ£º
- *   1. Òýµ¼±ØÐëÊÇ**Ç° 3 ¹Ø**´¥·¢£¬µÚ 4 ¹ØÆð²»ÔÙ³öÏÖ£»
- *   2. Òýµ¼ÆÚ¼ä**ÍÌµôÖ¸Õë**£¨·ñÔòÍæ¼ÒÄÜÔÚÕÚÕÖÏÂÃæÎó²Ù×÷ÆåÅÌ£©£»
- *   3. Òýµ¼×´Ì¬³Ö¾Ã»¯µ½´æµµ£¬ÇÒÉèÖÃÒ³¿ÉÖØ¿´¡£
+ * é‡ç‚¹å®ˆä¸‰æ¡ï¼š
+ *   1. å¼•å¯¼å¿…é¡»æ˜¯**å‰ 3 å…³**è§¦å‘ï¼Œç¬¬ 4 å…³èµ·ä¸å†å‡ºçŽ°ï¼›
+ *   2. å¼•å¯¼æœŸé—´**åžæŽ‰æŒ‡é’ˆ**ï¼ˆå¦åˆ™çŽ©å®¶èƒ½åœ¨é®ç½©ä¸‹é¢è¯¯æ“ä½œæ£‹ç›˜ï¼‰ï¼›
+ *   3. å¼•å¯¼çŠ¶æ€æŒä¹…åŒ–åˆ°å­˜æ¡£ï¼Œä¸”è®¾ç½®é¡µå¯é‡çœ‹ã€‚
  *
- * ?? ±¾ÎÄ¼þÊÇÎ¨Ò»Ê¹ÓÃ `keepTutorial: true` µÄ spec£º
- *    ÆäÓàÍæ·¨ÀàÓÃÀýÄ¬ÈÏÌø¹ýÒýµ¼£¨ÕÚÕÖ»áÍÌÖ¸Õë£¬·ñÔòÈ«±»µ²×¡£©¡£
+ * ?? æœ¬æ–‡ä»¶æ˜¯å”¯ä¸€ä½¿ç”¨ `keepTutorial: true` çš„ specï¼š
+ *    å…¶ä½™çŽ©æ³•ç±»ç”¨ä¾‹é»˜è®¤è·³è¿‡å¼•å¯¼ï¼ˆé®ç½©ä¼šåžæŒ‡é’ˆï¼Œå¦åˆ™å…¨è¢«æŒ¡ä½ï¼‰ã€‚
  */
-test.describe('ÐÂÊÖÒýµ¼', () => {
-  /** ´ò¿ªÓÎÏ·²¢Í£ÔÚµÚ idx ¹Ø£¬±£ÁôÒýµ¼ */
+test.describe('æ–°æ‰‹å¼•å¯¼', () => {
+  /** æ‰“å¼€æ¸¸æˆå¹¶åœåœ¨ç¬¬ idx å…³ï¼Œä¿ç•™å¼•å¯¼ */
   async function openTutorialLevel(page: import('@playwright/test').Page, idx: number) {
     await openGame(page, { keepTutorial: true, enterGame: false });
     await page.evaluate(() => window.__RUSH_HOUR__.wipeSave());
@@ -28,12 +28,12 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
     }, idx);
   }
 
-  test('Ê×´Î½øÈëµÚ 1 ¹Ø´¥·¢Òýµ¼ÕÚÕÖ', async ({ page }) => {
+  test('é¦–æ¬¡è¿›å…¥ç¬¬ 1 å…³è§¦å‘å¼•å¯¼é®ç½©', async ({ page }) => {
     await openTutorialLevel(page, 0);
     expect(await page.evaluate(() => window.__RUSH_HOUR__.screen.hasTutorial)).toBe(true);
   });
 
-  test('Òýµ¼¸ßÁÁ¶´ÂäÔÚºì³µËùÔÚÎ»ÖÃ£¨Çé¾³»¯¶ø·ÇÈ«ÆÁÎÄ°¸£©', async ({ page }) => {
+  test('å¼•å¯¼é«˜äº®æ´žè½åœ¨çº¢è½¦æ‰€åœ¨ä½ç½®ï¼ˆæƒ…å¢ƒåŒ–è€Œéžå…¨å±æ–‡æ¡ˆï¼‰', async ({ page }) => {
     await openTutorialLevel(page, 0);
 
     const info = await page.evaluate(() => {
@@ -43,9 +43,9 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
       const l = api.screen.currentLayout;
       return { hole, red, layout: l };
     });
-    expect(info.hole, 'µÚ 1 ¹ØÓ¦ÍÚ¶´¸ßÁÁºì³µ').not.toBeNull();
+    expect(info.hole, 'ç¬¬ 1 å…³åº”æŒ–æ´žé«˜äº®çº¢è½¦').not.toBeNull();
 
-    // ¶´±ØÐë¸²¸Çºì³µËùÔÚ¸ñ£¨ÔÊÐí METRICS µÄ pad ÓëÈ¡ÕûÎó²î£©
+    // æ´žå¿…é¡»è¦†ç›–çº¢è½¦æ‰€åœ¨æ ¼ï¼ˆå…è®¸ METRICS çš„ pad ä¸Žå–æ•´è¯¯å·®ï¼‰
     const redX = info.layout.boardX + info.red.c * info.layout.cell;
     const redY = info.layout.boardY + info.red.r * info.layout.cell;
     expect(info.hole!.x).toBeLessThanOrEqual(redX);
@@ -54,13 +54,13 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
     expect(info.hole!.y + info.hole!.h).toBeGreaterThanOrEqual(redY + info.layout.cell);
   });
 
-  test('Òýµ¼ÆÚ¼äÆåÅÌ²»¿É²Ù×÷£¨Ö¸Õë±»ÍÌ£©', async ({ page }) => {
+  test('å¼•å¯¼æœŸé—´æ£‹ç›˜ä¸å¯æ“ä½œï¼ˆæŒ‡é’ˆè¢«åžï¼‰', async ({ page }) => {
     await openTutorialLevel(page, 0);
 
     const before = await page.evaluate(() => window.__RUSH_HOUR__.screen.steps);
     expect(before).toBe(0);
 
-    // ÔÚºì³µÎ»ÖÃÍÏ×§£ºÒýµ¼²ãÓ¦ÍÌµô£¬²½Êý±ØÐë²»±ä
+    // åœ¨çº¢è½¦ä½ç½®æ‹–æ‹½ï¼šå¼•å¯¼å±‚åº”åžæŽ‰ï¼Œæ­¥æ•°å¿…é¡»ä¸å˜
     const info = await page.evaluate(() => {
       const api = window.__RUSH_HOUR__;
       const red = api.screen.piecePositions.find((p) => p.id === 'R')!;
@@ -73,16 +73,16 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
     await page.touchscreen.tap(info.x, info.y);
 
     const after = await page.evaluate(() => window.__RUSH_HOUR__.screen.steps);
-    expect(after, 'Òýµ¼ÆÚ¼ä²»Ó¦²úÉúÈÎºÎ×ß×Ó').toBe(0);
+    expect(after, 'å¼•å¯¼æœŸé—´ä¸åº”äº§ç”Ÿä»»ä½•èµ°å­').toBe(0);
   });
 
-  test('µã"ÎÒÖªµÀÁË"Íê³ÉÒýµ¼£¬×´Ì¬Ð´Èë´æµµ', async ({ page }) => {
+  test('ç‚¹"æˆ‘çŸ¥é“äº†"å®Œæˆå¼•å¯¼ï¼ŒçŠ¶æ€å†™å…¥å­˜æ¡£', async ({ page }) => {
     await openTutorialLevel(page, 0);
     expect(await page.evaluate(() => window.__RUSH_HOUR__.screen.hasTutorial)).toBe(true);
 
-    // ´ÓÕæÊµµÄ°´Å¥¾ØÐÎÈ¡×ø±ê£¨²»²ÂÏñËØ£¬·ñÔò²¼¾ÖÒ»¸Ä¾ÍÎó±¨£©
+    // ä»ŽçœŸå®žçš„æŒ‰é’®çŸ©å½¢å–åæ ‡ï¼ˆä¸çŒœåƒç´ ï¼Œå¦åˆ™å¸ƒå±€ä¸€æ”¹å°±è¯¯æŠ¥ï¼‰
     const rects = await page.evaluate(() => window.__RUSH_HOUR__.screen.tutorialButtonRects());
-    expect(rects.ok, 'Ó¦±©Â¶"ÎÒÖªµÀÁË"°´Å¥¾ØÐÎ').not.toBeNull();
+    expect(rects.ok, 'åº”æš´éœ²"æˆ‘çŸ¥é“äº†"æŒ‰é’®çŸ©å½¢').not.toBeNull();
     const btn = rects.ok!;
 
     const vw = await page.evaluate(() => window.innerWidth);
@@ -102,7 +102,7 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
     expect(state.tutorialDone).toBe(true);
   });
 
-  test('µã"Ìø¹ý"Í¬ÑùÍê³ÉÒýµ¼', async ({ page }) => {
+  test('ç‚¹"è·³è¿‡"åŒæ ·å®Œæˆå¼•å¯¼', async ({ page }) => {
     await openTutorialLevel(page, 0);
 
     const rects = await page.evaluate(() => window.__RUSH_HOUR__.screen.tutorialButtonRects());
@@ -114,21 +114,21 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
     expect(await page.evaluate(() => window.__RUSH_HOUR__.save.tutorialDone)).toBe(true);
   });
 
-  test('Èý¹ØµÄÒýµ¼ÎÄ°¸Óë¹æ¸ñÊéÒ»ÖÂ', async ({ page }) => {
+  test('ä¸‰å…³çš„å¼•å¯¼æ–‡æ¡ˆä¸Žè§„æ ¼ä¹¦ä¸€è‡´', async ({ page }) => {
     const expected = [
-      'ÏòÓÒÍÏ¶¯ºì³µ¿ª³ö³ö¿Ú',
-      'Êú³µÖ»ÄÜÉÏÏÂÒÆ¶¯£¬ÏÈ°ÑËüÅ²¿ª',
-      'Ò»´ÎÖ»ÄÜ¶¯Ò»Á¾³µ£¬ÏëºÃË³Ðò',
+      'å‘å³æ‹–åŠ¨çº¢è½¦å¼€å‡ºå‡ºå£',
+      'ç«–è½¦åªèƒ½ä¸Šä¸‹ç§»åŠ¨ï¼Œå…ˆæŠŠå®ƒæŒªå¼€',
+      'ä¸€æ¬¡åªèƒ½åŠ¨ä¸€è¾†è½¦ï¼Œæƒ³å¥½é¡ºåº',
     ];
-    // ¿ÌÒâÁôÔÚÍ¬Ò»¸öÒ³Ãæ»á»°ÀïÁ¬ÐøÇÐ¹Ø£¨²» reload£©£º
-    //   reload »áÖØÐÂ½âÎö´æµµ¡¢ÖØ½¨ AppShell£¬°Ñ"ÇÐ¹ØÊÇ·ñÈÃÒýµ¼¸úËæ"Õâ¼þÊÂ
-    //   ºÍ"ÀäÆô¶¯ÊÇ·ñÕýÈ·"Á½¼þÊÂ»ìÔÚÒ»Æð£¬Ê§°ÜÊ±ÎÞ·¨Çø·ÖÊÇÄÄÒ»²àµÄÎÊÌâ¡£
+    // åˆ»æ„ç•™åœ¨åŒä¸€ä¸ªé¡µé¢ä¼šè¯é‡Œè¿žç»­åˆ‡å…³ï¼ˆä¸ reloadï¼‰ï¼š
+    //   reload ä¼šé‡æ–°è§£æžå­˜æ¡£ã€é‡å»º AppShellï¼ŒæŠŠ"åˆ‡å…³æ˜¯å¦è®©å¼•å¯¼è·Ÿéš"è¿™ä»¶äº‹
+    //   å’Œ"å†·å¯åŠ¨æ˜¯å¦æ­£ç¡®"ä¸¤ä»¶äº‹æ··åœ¨ä¸€èµ·ï¼Œå¤±è´¥æ—¶æ— æ³•åŒºåˆ†æ˜¯å“ªä¸€ä¾§çš„é—®é¢˜ã€‚
     await openGame(page, { keepTutorial: true, enterGame: false });
     await page.evaluate(() => window.__RUSH_HOUR__.wipeSave());
 
     for (let i = 0; i < 3; i++) {
-      // ÏÈÇÐ¹Ø£¬ÔÙµ¥¶À²éÑ¯ ¡ª¡ª °Ñ"ÇÐ¹Ø"Óë"¶Á×´Ì¬"·ÖÁ½¸ö evaluate£¬
-      // ±ÜÃâÄ³Ð©ÄÚºËÏÂ evaluate ÄÚµÄÁ¬Ðø¶ÁÈ¡Óë rAF Ö¡½»´íµ¼ÖÂ¶Áµ½ÖÐ¼äÌ¬¡£
+      // å…ˆåˆ‡å…³ï¼Œå†å•ç‹¬æŸ¥è¯¢ â€”â€” æŠŠ"åˆ‡å…³"ä¸Ž"è¯»çŠ¶æ€"åˆ†ä¸¤ä¸ª evaluateï¼Œ
+      // é¿å…æŸäº›å†…æ ¸ä¸‹ evaluate å†…çš„è¿žç»­è¯»å–ä¸Ž rAF å¸§äº¤é”™å¯¼è‡´è¯»åˆ°ä¸­é—´æ€ã€‚
       await page.evaluate((idx) => {
         const api = window.__RUSH_HOUR__;
         api.nav.openLevel(api.repo.levels[idx].id, 'select');
@@ -143,14 +143,14 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
         step: window.__RUSH_HOUR__.screen.tutorialStep,
         levelId: window.__RUSH_HOUR__.screen.levelId,
       }));
-      expect(actual.levelId, `Ó¦Í£ÔÚµÚ ${i + 1} ¹Ø`).toBe(`t0${i + 1}`);
-      expect(actual.step, `µÚ ${i + 1} ¹ØµÄÒýµ¼²½ºÅ`).toBe(i + 1);
-      expect(actual.text, `µÚ ${i + 1} ¹ØÒýµ¼ÎÄ°¸`).toBe(expected[i]);
+      expect(actual.levelId, `åº”åœåœ¨ç¬¬ ${i + 1} å…³`).toBe(`t0${i + 1}`);
+      expect(actual.step, `ç¬¬ ${i + 1} å…³çš„å¼•å¯¼æ­¥å·`).toBe(i + 1);
+      expect(actual.text, `ç¬¬ ${i + 1} å…³å¼•å¯¼æ–‡æ¡ˆ`).toBe(expected[i]);
     }
   });
 
-  test('Òýµ¼Íê³ÉºóÔÙ½øµÚ 1 ¹Ø²»ÔÙµ¯³ö', async ({ page }) => {
-    await openGame(page); // Ä¬ÈÏÒÑ±ê¼Ç tutorialDone
+  test('å¼•å¯¼å®ŒæˆåŽå†è¿›ç¬¬ 1 å…³ä¸å†å¼¹å‡º', async ({ page }) => {
+    await openGame(page); // é»˜è®¤å·²æ ‡è®° tutorialDone
     await page.evaluate(() => window.__RUSH_HOUR__.wipeSave());
     await page.evaluate(() => {
       const api = window.__RUSH_HOUR__;
@@ -160,7 +160,7 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
     expect(await page.evaluate(() => window.__RUSH_HOUR__.screen.hasTutorial)).toBe(false);
   });
 
-  test('µÚ 4 ¹Ø¼°Ö®ºó²»´¥·¢Òýµ¼£¨Ö»½ÌÑ§Ç° 3 ¹Ø£©', async ({ page }) => {
+  test('ç¬¬ 4 å…³åŠä¹‹åŽä¸è§¦å‘å¼•å¯¼ï¼ˆåªæ•™å­¦å‰ 3 å…³ï¼‰', async ({ page }) => {
     await openGame(page, { keepTutorial: true, enterGame: false });
     await page.evaluate(() => window.__RUSH_HOUR__.wipeSave());
     const has = await page.evaluate(() => {
@@ -168,23 +168,23 @@ test.describe('ÐÂÊÖÒýµ¼', () => {
       api.nav.openLevel(api.repo.levels[3].id, 'select');
       return api.screen.hasTutorial;
     });
-    expect(has, 'µÚ 4 ¹Ø²»Ó¦´¥·¢Òýµ¼').toBe(false);
+    expect(has, 'ç¬¬ 4 å…³ä¸åº”è§¦å‘å¼•å¯¼').toBe(false);
   });
 
-  test('Ç° 3 ¹ØÖð¹Ø´¥·¢Òýµ¼', async ({ page }) => {
+  test('å‰ 3 å…³é€å…³è§¦å‘å¼•å¯¼', async ({ page }) => {
     for (let i = 0; i < 3; i++) {
       await openTutorialLevel(page, i);
       const has = await page.evaluate(() => window.__RUSH_HOUR__.screen.hasTutorial);
-      expect(has, `µÚ ${i + 1} ¹ØÓ¦´¥·¢Òýµ¼`).toBe(true);
+      expect(has, `ç¬¬ ${i + 1} å…³åº”è§¦å‘å¼•å¯¼`).toBe(true);
     }
   });
 
-  test('ÉèÖÃÒ³"ÖØ¿´Òýµ¼"ÄÜÔÙ´Î´¥·¢', async ({ page }) => {
+  test('è®¾ç½®é¡µ"é‡çœ‹å¼•å¯¼"èƒ½å†æ¬¡è§¦å‘', async ({ page }) => {
     await openGame(page, { enterGame: false });
     await page.evaluate(() => {
       window.__RUSH_HOUR__.save.tutorialDone = true;
     });
-    // ±ØÐëÕæÕý½øÈëÉèÖÃÒ³ÔÙ´¥·¢£¨ÉèÖÃÒ³ÊÇ´¥·¢Èë¿Ú£¬²»ÊÇÔÚÈÎÒâÆÁ¶¼ÄÜµ÷µÄ£©
+    // å¿…é¡»çœŸæ­£è¿›å…¥è®¾ç½®é¡µå†è§¦å‘ï¼ˆè®¾ç½®é¡µæ˜¯è§¦å‘å…¥å£ï¼Œä¸æ˜¯åœ¨ä»»æ„å±éƒ½èƒ½è°ƒçš„ï¼‰
     await goto(page, 'settings');
     await page.evaluate(() => window.__RUSH_HOUR__.settings.trigger('tutorial'));
 

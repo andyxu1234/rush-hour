@@ -38,13 +38,19 @@ import {
   type CarWithOffset,
 } from '../canvas2d';
 import type { ColorInfo } from '../theme';
+import { drawPauseDialog } from '../farm-art';
 import {
   computeLayout,
   dialogButtonsOnScreen,
   hudButtons,
   hitButton,
+  hitRect,
   insideBoard,
+  pauseGeometry,
   pxToCell,
+  topBarGeometry,
+  type ButtonId,
+  type ButtonRect,
   type Layout,
 } from '../layout';
 import { InputController, type InputIntent } from '../input';
@@ -134,6 +140,21 @@ export class GameScreen implements Screen {
   private solveHandled = false;
   private hintUsedInLevel = 0;
 
+  /** 暂停面板是否打开（打开时指针只走面板按钮，棋盘不可拖拽） */
+  private paused = false;
+  /** 暂停面板入场进度 0→1 */
+  private pauseProgress = 0;
+  /**
+   * 按钮按下反馈。
+   *
+   * 为什么需要它：按钮在**按下时**就触发（onStart 即派发 button 意图），
+   * 若不额外记一个短暂的高亮，玩家永远看不到"按到了"的反馈 ——
+   * 高保真稿要求的"缩小 0.95 + 音效"就落不了地。
+   */
+  private btnFlash: { id: ButtonId; until: number } | null = null;
+  /** 出口箭头的呼吸相位（0→1 循环） */
+  private exitPhase = 0;
+
   constructor(
     private readonly deps: GameScreenDeps,
     private readonly hooks: GameScreenHooks,
@@ -220,6 +241,10 @@ export class GameScreen implements Screen {
     this.stop();
     this.flushSave();
     this.tutorial = null;
+    // 离开游戏页必须收掉暂停面板与按下反馈，否则下次进入会带着上一次的残留状态
+    this.paused = false;
+    this.pauseProgress = 0;
+    this.btnFlash = null;
   }
 
   /** 由 ScreenManager 每帧调用 */
@@ -229,6 +254,13 @@ export class GameScreen implements Screen {
     this.anim.advance(dt);
     this.input.tick(now);
     if (this.toast && now > this.toast.until) this.toast = null;
+    if (this.btnFlash && now > this.btnFlash.until) this.btnFlash = null;
+
+    // 出口箭头呼吸：1.6s 一个周期，幅度约 0.18 格
+    this.exitPhase = (this.exitPhase + dt / 1600) % 1;
+    if (this.paused && this.pauseProgress < 1) {
+      this.pauseProgress = Math.min(1, this.pauseProgress + dt / 180);
+    }
 
     if (this.saveTimer > 0) {
       this.saveTimer -= dt;
@@ -275,8 +307,11 @@ export class GameScreen implements Screen {
         return self.game.state;
       },
       pieceAt: (x: number, y: number) => self.pieceAt(x, y),
-      buttons: () => hudButtons(self.layout),
-      dialogOpen: () => self.dialog !== null,
+      // 可交互按钮 = 底部操作区 + 顶部功能按钮（暂停 / 音效）。
+      // 顶部木牌与金币位是纯展示，刻意不进这张表 —— 否则点一下金币会派发 button 意图。
+      buttons: () => self.interactiveButtons(),
+      // 暂停面板与结算弹窗都会吞掉棋盘交互（面板按钮由 onTap 命中）
+      dialogOpen: () => self.dialog !== null || self.paused,
     };
     return new InputController(host as any, {
       onLongPress: (id) => this.showMovableDirs(id),
@@ -407,6 +442,27 @@ export class GameScreen implements Screen {
 
   // ---------------------------------------------------------------- 交互
 
+  /**
+   * 真正可点的按钮：底部操作区 + 顶部功能按钮。
+   *
+   * 顶部木牌（关卡/步数）与金币位只是展示，刻意不进表：
+   * 一旦进去，玩家点一下金币就会派发 button 意图，命中测试也必须为它们兜底。
+   */
+  private interactiveButtons(): ButtonRect[] {
+    const top = topBarGeometry(this.layout);
+    return [top.pause, top.sound, ...hudButtons(this.layout)];
+  }
+
+  /** 记录一次按下反馈（0.95 缩放 + 音效已在 onButton 里播） */
+  private flashButton(id: ButtonId): void {
+    this.btnFlash = { id, until: this.lastTime + 130 };
+  }
+
+  private setPaused(on: boolean): void {
+    this.paused = on;
+    this.pauseProgress = on ? 0 : 0;
+  }
+
   private onIntent(intent: InputIntent): void {
     switch (intent.type) {
       case 'button':
@@ -434,6 +490,21 @@ export class GameScreen implements Screen {
   }
 
   private onTap(x: number, y: number): void {
+    // 暂停面板：命中与绘制共用 pauseGeometry（与结算弹窗同一套纪律）
+    if (this.paused) {
+      const hit = hitRect(pauseGeometry(this.layout).buttons, x, y);
+      if (!hit) return;
+      this.flashButton(hit.id);
+      this.deps.platform.audio.play('click');
+      this.deps.analytics?.track('button_click', { id: hit.id, levelId: this.game.level.id });
+      if (hit.id === 'resume') this.setPaused(false);
+      else if (hit.id === 'restart') {
+        this.setPaused(false);
+        this.restartLevel();
+      } else this.deps.goBack?.();
+      return;
+    }
+
     if (this.dialog) {
       // 命中测试用「动画结束后的最终矩形」：入场缩放期间画面略微缩小，
       // 但玩家点击的目标位置就是稳定态的位置；用最终矩形判定更宽容、也更符合直觉。
@@ -495,11 +566,37 @@ export class GameScreen implements Screen {
     });
   }
 
-  private onButton(id: 'undo' | 'reset' | 'hint' | 'next' | 'replay' | 'share'): void {
-    // 结算弹窗的三个按钮由 onTap 处理（需要坐标命中），这里只处理 HUD 与直接调用
-    if (id === 'next' || id === 'replay' || id === 'share') return;
+  private onButton(id: ButtonId): void {
+    // 结算弹窗与暂停面板的按钮由 onTap 处理（需要坐标命中），这里只处理常驻按钮。
+    // 直接 return 而不是 default: break，是为了让"新增面板按钮忘了在这里排除"
+    // 变成编译期错误（ButtonId 联合类型新增成员时 switch 会报错）。
+    if (
+      id === 'next' ||
+      id === 'replay' ||
+      id === 'share' ||
+      id === 'resume' ||
+      id === 'restart' ||
+      id === 'quit' ||
+      id === 'level' ||
+      id === 'moves' ||
+      id === 'coin'
+    ) {
+      return;
+    }
+
+    this.flashButton(id);
     this.deps.platform.audio.play('click');
     this.deps.analytics?.track('button_click', { id, levelId: this.game.level.id });
+
+    if (id === 'pause') {
+      if (this.game.solved) return;
+      this.setPaused(true);
+      return;
+    }
+    if (id === 'sound') {
+      this.toggleSound();
+      return;
+    }
     if (id === 'undo') {
       const last = this.game.moves[this.game.moves.length - 1];
       if (!this.game.undo()) return;
@@ -520,6 +617,32 @@ export class GameScreen implements Screen {
       return;
     }
     if (id === 'hint') this.useHint();
+  }
+
+  /**
+   * 音效开关（顶栏喇叭）。
+   *
+   * 与设置页共用同一份口径：`platform.audio.setMuted(!settings.sfx)`。
+   * 只写存档不调 setMuted 的话，会出现"图标变了但声音还在"的错位。
+   */
+  private toggleSound(): void {
+    const on = !this.deps.save.settings.sfx;
+    this.deps.save.settings.sfx = on;
+    this.deps.platform.audio.setMuted(!on);
+    this.deps.persist();
+    this.showToast(on ? '音效已开启' : '音效已关闭');
+  }
+
+  /**
+   * 金币数（商业化占位栏位）。
+   *
+   * 刻意**不是**硬编码假数据：按已获得的星星累计，因此它随进度真实变化，
+   * 上线接入真实经济系统时只要换掉这一个函数即可。
+   */
+  private coinsOfSave(): number {
+    let stars = 0;
+    for (const p of Object.values(this.deps.save.levels)) stars += p.stars;
+    return stars * 100;
   }
 
   private useHint(): void {
@@ -672,6 +795,10 @@ export class GameScreen implements Screen {
     this.dragging = null;
     this.toast = null;
     this.delayed = [];
+    // 暂停面板必须一起收掉：否则切关后新棋盘会被旧面板盖住（且棋盘点不动）
+    this.paused = false;
+    this.pauseProgress = 0;
+    this.btnFlash = null;
     this.anim.clear();
   }
 
@@ -838,7 +965,9 @@ export class GameScreen implements Screen {
     const layout = this.layout;
     drawBackground(ctx, layout);
     drawBoard(ctx, layout);
-    drawExit(ctx, layout, 0);
+    // 出口箭头呼吸：幅度随格子缩放，避免小屏上抖得太夸张
+    const pulse = Math.sin(this.exitPhase * Math.PI * 2) * Math.max(1.5, layout.cell * 0.05);
+    drawExit(ctx, layout, pulse);
 
     const pieces = this.game.board.pieces;
     const state = this.game.state;
@@ -906,6 +1035,11 @@ export class GameScreen implements Screen {
         steps: this.game.steps,
         parMoves: this.game.parMoves,
         hintLeft: Math.max(0, 1 - this.hintUsedInLevel),
+        // 历史最佳：存档里有记录才显示（没通关过就不该出现"最佳 0"）
+        bestMoves: this.deps.save.levels[this.game.level.id]?.bestMoves,
+        coins: this.coinsOfSave(),
+        soundOn: this.deps.save.settings.sfx,
+        pressedId: this.btnFlash?.id ?? null,
       },
       this.game.canUndo,
     );
@@ -925,6 +1059,9 @@ export class GameScreen implements Screen {
         shareEnabled: this.hooks.onShare !== undefined,
       });
     }
+
+    // 暂停面板盖住 HUD（玩家此时不应再点到顶栏按钮）
+    if (this.paused) drawPauseDialog(ctx, layout, this.pauseProgress);
 
     // 引导遮罩画在最上层：必须盖住结算弹窗与 HUD，否则玩家能点到下面的按钮
     this.tutorial?.render(ctx);
@@ -1021,6 +1158,23 @@ export class GameScreen implements Screen {
   /** 供 e2e 使用：HUD 按钮的真实屏幕矩形（用于像素级点击验证命中测试） */
   hudButtonRects(): Array<{ id: string; label: string; x: number; y: number; w: number; h: number }> {
     return hudButtons(this.layout);
+  }
+  /**
+   * 供 e2e 使用：顶栏元素矩形（暂停 / 音效 / 金币 / 关卡木牌 / 步数木牌）。
+   * 与绘制共用 topBarGeometry，因此断言的是画面上的真实位置。
+   */
+  topBarRects(): Array<{ id: string; label: string; x: number; y: number; w: number; h: number }> {
+    const g = topBarGeometry(this.layout);
+    return [g.pause, g.sound, g.levelPlate, g.movesPlate, g.coinPill];
+  }
+  /** 供 e2e 使用：暂停面板是否打开 */
+  get isPaused(): boolean {
+    return this.paused;
+  }
+  /** 供 e2e 使用：暂停面板按钮矩形（关闭时返回空数组） */
+  pauseButtonRects(): Array<{ id: string; label: string; x: number; y: number; w: number; h: number }> {
+    if (!this.paused) return [];
+    return pauseGeometry(this.layout).buttons;
   }
   /**
    * 供 e2e 使用：结算弹窗按钮的屏幕矩形（稳定态，与命中测试同一口径）。

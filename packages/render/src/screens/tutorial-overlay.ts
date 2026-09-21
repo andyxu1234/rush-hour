@@ -150,7 +150,7 @@ export class TutorialOverlay {
     // 棋盘下方剩余空间不足时，气泡移到棋盘上方（避免压住棋盘）
     const below = boardBottom + Math.round(layout.height * 0.02);
     const y =
-      below + h <= layout.height - Math.round(layout.height * 0.03)
+      below + h <= layout.height - layout.bottomBarH - Math.round(layout.height * 0.01)
         ? below
         : Math.max(layout.hudHeight + layout.height * 0.01, layout.boardY - h - layout.height * 0.02);
     return { x: Math.round((layout.width - w) / 2), y: Math.round(y), w, h };

@@ -87,6 +87,14 @@ export interface CanvasRenderingContext2DLike {
   ): void;
   strokeRect(x: number, y: number, w: number, h: number): void;
   fillText(text: string, x: number, y: number, maxWidth?: number): void;
+  /**
+   * 描边文字（卡通字的外描边用）。
+   *
+   * 声明为**可选**：小游戏低版本的 2D canvas 可能没有 strokeText，
+   * 渲染层必须能在缺失时退化（否则整块文字会画不出来）。
+   * 浏览器与新版 wx canvas 均支持，因此两端实际都会走描边路径。
+   */
+  strokeText?(text: string, x: number, y: number, maxWidth?: number): void;
   measureText(text: string): { width: number };
   createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradientLike;
   /** 圆角矩形并非全端原生支持，故为可选；render 层需自带降级路径 */

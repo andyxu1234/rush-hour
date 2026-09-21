@@ -7,6 +7,7 @@
 
 import { COLS, ROWS } from '@rush-hour/core';
 import { DESIGN, METRICS } from './theme';
+import { clamp } from './farm-theme';
 
 export interface Layout {
   /** 逻辑尺寸（平台 screen()） */
@@ -18,20 +19,49 @@ export interface Layout {
   boardX: number;
   boardY: number;
   boardSize: number;
-  /** HUD 区域高度 */
+  /** 顶部 HUD 总高（含胶囊安全区，见 safeTop） */
   hudHeight: number;
+  /** 底部操作区（提示/重置/撤销）高度 */
+  bottomBarH: number;
+  /** 顶部为微信右上角胶囊预留的安全高度 —— 顶部信息一律画在它下面 */
+  safeTop: number;
+  /** 右侧为胶囊预留的安全宽度（H5 为 0） */
+  safeRight: number;
   /** 缩放因子：设计分辨率 → 实际逻辑尺寸 */
   scale: number;
 }
 
-export function computeLayout(width: number, height: number): Layout {
-  const hudHeight = Math.round(Math.min(96, Math.max(72, height * 0.13)));
-  const margin = Math.round(Math.min(width, height) * METRICS.boardMargin);
-  const availW = width - margin * 2;
-  const availH = height - hudHeight - margin * 2;
+/** 宿主安全区（微信小游戏由胶囊按钮位置决定；H5 无胶囊） */
+export interface SafeInsets {
+  top?: number;
+  right?: number;
+}
+
+/**
+ * 三段式竖排：顶部信息栏 / 中部棋盘 / 底部操作区。
+ *
+ * 为什么把底部操作区从"棋盘正下方"改到"屏幕底部"：
+ *   1. 对齐 design/design1.jpg 的高保真稿（三个大木按钮贴底）；
+ *   2. 大拇指自然落点在屏幕下缘，贴着棋盘放会与拖拽抢区域。
+ *
+ * 出口通道（exitLane）从**两侧**等量扣除，因此棋盘仍然严格水平居中 ——
+ * layout.test 与 e2e/smoke.spec 都断言了 `|左留白 - 右留白| <= 1`。
+ */
+export function computeLayout(width: number, height: number, insets: SafeInsets = {}): Layout {
+  const short = Math.min(width, height);
+  const safeTop = Math.round(clamp(insets.top ?? height * 0.065, 20, 50));
+  const safeRight = Math.round(clamp(insets.right ?? 0, 0, width * 0.4));
+  const hudRowH = Math.round(clamp(height * 0.075, 48, 60));
+  const hudHeight = safeTop + hudRowH;
+  const bottomBarH = Math.round(clamp(height * 0.12, 64, 96));
+
+  const margin = Math.round(short * METRICS.boardMargin);
+  const exitLane = Math.round(short * METRICS.exitLaneRatio);
+  const availW = Math.max(60, width - margin * 2 - exitLane);
+  const availH = Math.max(60, height - hudHeight - bottomBarH - margin * 2);
 
   // 取两方向可行边长的较小值 → 保证完全放进屏幕且格子为正方形
-  const cell = Math.floor(Math.min(availW / COLS, availH / ROWS));
+  const cell = Math.max(8, Math.floor(Math.min(availW / COLS, availH / ROWS)));
   const boardSize = cell * COLS;
 
   return {
@@ -39,9 +69,14 @@ export function computeLayout(width: number, height: number): Layout {
     height,
     cell,
     boardX: Math.round((width - boardSize) / 2),
-    boardY: Math.round(hudHeight + (height - hudHeight - boardSize) / 2),
+    boardY: Math.round(
+      hudHeight + Math.max(0, (height - hudHeight - bottomBarH - boardSize) / 2),
+    ),
     boardSize,
     hudHeight,
+    bottomBarH,
+    safeTop,
+    safeRight,
     scale: Math.max(0.6, Math.min(width / DESIGN.width, 1.6)),
   };
 }
@@ -69,9 +104,33 @@ export function insideBoard(layout: Layout, x: number, y: number): boolean {
   );
 }
 
-/** HUD 中的按钮矩形（撤销 / 重开 / 提示） */
+/**
+ * 可交互按钮的 id 全集。
+ * 开放成一个联合类型而不是每处各写字符串，是为了让"绘制 → 命中 → 断言"
+ * 三处共享同一份 id 契约（否则很容易出现画了却没人处理的事件）。
+ */
+export type ButtonId =
+  | 'undo'
+  | 'reset'
+  | 'hint'
+  | 'next'
+  | 'replay'
+  | 'share'
+  | 'pause'
+  | 'sound'
+  | 'resume'
+  | 'restart'
+  | 'quit'
+  // 以下三个是"纯展示位"（关卡木牌 / 步数木牌 / 金币），
+  // 放进联合类型只为让 topBarGeometry 复用 ButtonRect 而不必再造一个矩形类型；
+  // 它们不会被 hitButton 命中，因为 GameScreen 的交互按钮表不包含它们。
+  | 'level'
+  | 'moves'
+  | 'coin';
+
+/** 按钮 / 可点区域的矩形 */
 export interface ButtonRect {
-  id: 'undo' | 'reset' | 'hint' | 'next' | 'replay' | 'share';
+  id: ButtonId;
   x: number;
   y: number;
   w: number;
@@ -79,21 +138,152 @@ export interface ButtonRect {
   label: string;
 }
 
+/**
+ * 底部操作区三个大木按钮：撤销 / 重置 / 提示。
+ *
+ * 顺序保持 `undo → reset → hint` 不变：e2e（drag/touch）与 input.test 都按
+ * "第 1 个是撤销、第 2 个是重置"来点击，改顺序会让一批用例静默点错按钮。
+ */
 export function hudButtons(layout: Layout): ButtonRect[] {
-  const y = layout.boardY + layout.boardSize + Math.round(layout.cell * 0.34);
-  const h = Math.round(Math.min(52, layout.cell * 1.05));
-  const gap = Math.max(8, Math.round(layout.cell * 0.2));
-  const total = layout.boardSize;
-  const w = Math.floor((total - gap * 2) / 3);
+  const { boardX, boardSize, bottomBarH, height } = layout;
+  const gap = Math.max(8, Math.round(boardSize * 0.03));
+  const size = Math.max(
+    24,
+    Math.min(Math.round(bottomBarH * 0.84), Math.round(boardSize / 3.4)),
+  );
+  const total = size * 3 + gap * 2;
+  const startX = boardX + Math.round((boardSize - total) / 2);
+  const y = height - bottomBarH + Math.round((bottomBarH - size) / 2);
   const mk = (i: number, id: ButtonRect['id'], label: string): ButtonRect => ({
     id,
-    x: layout.boardX + i * (w + gap),
+    x: startX + i * (size + gap),
     y,
-    w,
-    h,
+    w: size,
+    h: size,
     label,
   });
-  return [mk(0, 'undo', '撤销'), mk(1, 'reset', '重开'), mk(2, 'hint', '提示')];
+  return [mk(0, 'undo', '撤销'), mk(1, 'reset', '重置'), mk(2, 'hint', '提示')];
+}
+
+/** 顶部信息栏的几何 —— 左侧功能按钮、中部木牌、右侧货币位 */
+export interface TopBarGeometry {
+  /** 暂停（放左侧，避开微信右上角胶囊） */
+  pause: ButtonRect;
+  /** 音效开关（同样放左侧） */
+  sound: ButtonRect;
+  /** 关卡木牌（窄屏会压缩，文案由绘制层用 maxWidth 收窄） */
+  levelPlate: ButtonRect;
+  /** 步数 / 最佳 木牌 */
+  movesPlate: ButtonRect;
+  /** 货币（金币）位，预留给后续商业化 / 体力 */
+  coinPill: ButtonRect;
+  /** 信息栏所在行（木牌与圆形按钮的纵向基准） */
+  rowY: number;
+  rowH: number;
+}
+
+/**
+ * 顶部信息栏几何。
+ *
+ * 关键约束：**所有元素都排在 `safeTop` 之下**。
+ * 微信小游戏右上角有原生胶囊（分享/退出，约 87×32），任何画在安全区内的
+ * 自绘按钮都会被它盖住且点不到 —— 因此功能按钮统一放左侧，且整行下移。
+ */
+export function topBarGeometry(layout: Layout): TopBarGeometry {
+  const { boardX, boardSize, safeTop, hudHeight } = layout;
+  const rowH = Math.max(24, hudHeight - safeTop);
+  const cy = safeTop + rowH / 2;
+  const gap = Math.max(6, Math.round(layout.width * 0.02));
+  const btn = Math.round(clamp(rowH - 16, 30, 44));
+  const by = Math.round(cy - btn / 2);
+
+  const pause: ButtonRect = { id: 'pause', x: boardX, y: by, w: btn, h: btn, label: '暂停' };
+  const sound: ButtonRect = {
+    id: 'sound',
+    x: boardX + btn + gap,
+    y: by,
+    w: btn,
+    h: btn,
+    label: '音效',
+  };
+
+  const coinW = Math.round(clamp(boardSize * 0.2, 46, 84));
+  const coinH = Math.round(btn * 0.76);
+  const coinPill: ButtonRect = {
+    id: 'coin',
+    x: boardX + boardSize - coinW,
+    y: Math.round(cy - coinH / 2),
+    w: coinW,
+    h: coinH,
+    label: '金币',
+  };
+
+  const midX = boardX + btn * 2 + gap * 2;
+  const midR = coinPill.x - gap;
+  const midW = Math.max(40, midR - midX);
+  const plateW = Math.max(40, Math.floor((midW - gap) / 2));
+
+  return {
+    pause,
+    sound,
+    levelPlate: { id: 'level', x: midX, y: by, w: plateW, h: btn, label: '' },
+    movesPlate: {
+      id: 'moves',
+      x: midX + plateW + gap,
+      y: by,
+      w: plateW,
+      h: btn,
+      label: '',
+    },
+    coinPill,
+    rowY: by,
+    rowH: btn,
+  };
+}
+
+/**
+ * 暂停面板几何。
+ *
+ * 与 dialogGeometry 同一套纪律：绘制（drawPauseDialog）、命中（onTap）
+ * 共用本函数，杜绝"看得到却点不着"。
+ */
+export interface PauseGeometry {
+  panelW: number;
+  panelH: number;
+  cx: number;
+  cy: number;
+  buttons: ButtonRect[];
+}
+
+export function pauseGeometry(layout: Layout): PauseGeometry {
+  const panelW = Math.round(Math.min(layout.width * 0.76, 330));
+  const panelH = Math.round(Math.min(layout.height * 0.44, 300));
+  const cx = layout.width / 2;
+  const cy = layout.height / 2;
+
+  const titleH = Math.round(panelH * 0.26);
+  const gap = Math.round(clamp(panelH * 0.05, 8, 18));
+  const bh = Math.round(clamp(panelH * 0.17, 34, 50));
+  const bw = Math.round(panelW * 0.7);
+  const totalH = bh * 3 + gap * 2;
+  const startY = Math.round(cy - panelH / 2 + titleH + (panelH - titleH - totalH) / 2);
+  const bx = Math.round(cx - bw / 2);
+
+  const ids: Array<[ButtonRect['id'], string]> = [
+    ['resume', '继续游戏'],
+    ['restart', '重新开始'],
+    ['quit', '返回上一页'],
+  ];
+  const buttons = ids.map(([id, label], i) => ({
+    id,
+    label,
+    x: bx,
+    y: startY + i * (bh + gap),
+    w: bw,
+    h: bh,
+  }));
+
+  return { panelW, panelH, cx, cy, buttons };
 }
 
 /**

@@ -13,7 +13,7 @@ import {
   drawToast,
   pickColors,
 } from '../src/canvas2d';
-import { computeLayout } from '../src/layout';
+import { computeLayout, hudButtons } from '../src/layout';
 
 /**
  * L4 渲染层验证。
@@ -171,18 +171,43 @@ describe('渲染层绘制', () => {
     assertNoNaN(calls);
   });
 
-  it('HUD 显示关卡名、步数、目标步数', () => {
+  it('顶部信息栏显示关卡木牌、步数木牌与金币，底部显示三个操作按钮', () => {
     const { ctx, notes, calls } = recordingCtx();
-    drawHud(ctx, layout, { levelName: '第1关', steps: 3, parMoves: 5, hintLeft: 1 }, true);
-    expect(notes).toContain('第1关');
+    drawHud(
+      ctx,
+      layout,
+      { levelName: '第1关 · 认识红车', steps: 3, parMoves: 5, hintLeft: 1, bestMoves: 2, coins: 300 },
+      true,
+    );
+    // 关卡木牌只取"第 N 关"（完整关卡名塞不进 ~70px 宽的木牌，见 levelBadge 注释）
+    expect(notes).toContain('第 1 关');
     expect(notes).toContain('步数 3');
-    expect(notes).toContain('目标 5 步');
+    expect(notes).toContain('最佳 2');
+    expect(notes).toContain('300');
+    // 底部操作区三个按钮（重置取代了旧的"重开"文案，与高保真稿一致）
     expect(notes).toContain('撤销');
-    path: {
-      expect(notes).toContain('重开');
-      expect(notes).toContain('提示');
-    }
+    expect(notes).toContain('重置');
+    expect(notes).toContain('提示');
     assertNoNaN(calls);
+  });
+
+  it('没通关过时不显示"最佳"行（避免出现"最佳 0"）', () => {
+    const { ctx, notes } = recordingCtx();
+    drawHud(ctx, layout, { levelName: '第5关', steps: 0, parMoves: 5, hintLeft: 1 }, true);
+    expect(notes.some((t) => t.startsWith('最佳'))).toBe(false);
+    expect(notes).toContain('步数 0');
+  });
+
+  it('整个 HUD 不产生 NaN 坐标，且底部操作按钮与棋盘不重叠', () => {
+    const { ctx, calls } = recordingCtx();
+    drawHud(ctx, layout, { levelName: '第1关', steps: 0, parMoves: 1, hintLeft: 1 }, false);
+    assertNoNaN(calls);
+    // 底部操作区必须完整落在棋盘下方，否则会与拖拽抢区域
+    for (const b of hudButtons(layout)) {
+      expect(b.y, `${b.id} 压到了棋盘`).toBeGreaterThanOrEqual(
+        layout.boardY + layout.boardSize - 1,
+      );
+    }
   });
 
   it('结算弹窗：显示步数对比并画三颗星', () => {

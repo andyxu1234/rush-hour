@@ -7,9 +7,12 @@ import {
   dialogGeometry,
   dialogScale,
   hitButton,
+  hitRect,
   hudButtons,
   insideBoard,
+  pauseGeometry,
   pxToCell,
+  topBarGeometry,
 } from '../src/layout';
 
 /**
@@ -144,6 +147,75 @@ describe('棋盘排版自适应', () => {
           expect(b.h).toBeGreaterThan(20);
         }
       }
+    }
+  });
+
+  it('顶部信息栏整体落在胶囊安全区之下，且不溢出视口', () => {
+    for (const d of DEVICES) {
+      const l = computeLayout(d.w, d.h);
+      const g = topBarGeometry(l);
+      const items = [
+        ['pause', g.pause],
+        ['sound', g.sound],
+        ['level', g.levelPlate],
+        ['moves', g.movesPlate],
+        ['coin', g.coinPill],
+      ] as const;
+
+      for (const [name, r] of items) {
+        // 微信右上角胶囊由 safeTop 高度兜住：任何自绘按钮都必须排到它下面
+        expect(r.y, `${d.name} ${name} 侵入胶囊区`).toBeGreaterThanOrEqual(l.safeTop - 1);
+        expect(r.h, `${d.name} ${name} 高度`).toBeGreaterThan(0);
+        expect(r.x, `${d.name} ${name} 左越界`).toBeGreaterThanOrEqual(-1);
+        expect(r.x + r.w, `${d.name} ${name} 右越界`).toBeLessThanOrEqual(l.width + 1);
+        expect(r.y + r.h, `${d.name} ${name} 下越界`).toBeLessThanOrEqual(l.hudHeight + 1);
+      }
+
+      // 从左到右依次排列，互不重叠（暂停 → 音效 → 关卡牌 → 步数牌 → 金币）
+      for (let i = 1; i < items.length; i++) {
+        expect(
+          items[i - 1][1].x + items[i - 1][1].w,
+          `${d.name} ${items[i - 1][0]} 与 ${items[i][0]} 重叠`,
+        ).toBeLessThanOrEqual(items[i][1].x + 1);
+      }
+    }
+  });
+
+  it('顶部功能按钮足够大（>=30px，触屏最小可点区域）', () => {
+    for (const d of DEVICES) {
+      const l = computeLayout(d.w, d.h);
+      const g = topBarGeometry(l);
+      expect(g.pause.w, d.name).toBeGreaterThanOrEqual(30);
+      expect(g.sound.w, d.name).toBeGreaterThanOrEqual(30);
+      expect(g.pause.h, d.name).toBeGreaterThanOrEqual(30);
+    }
+  });
+
+  it('暂停面板：按钮在面板内、互不重叠、可命中', () => {
+    for (const d of DEVICES) {
+      const l = computeLayout(d.w, d.h);
+      const g = pauseGeometry(l);
+      expect(g.buttons.map((b) => b.id)).toEqual(['resume', 'restart', 'quit']);
+      const panelTop = g.cy - g.panelH / 2;
+      const panelLeft = g.cx - g.panelW / 2;
+      for (let i = 0; i < g.buttons.length; i++) {
+        const b = g.buttons[i];
+        expect(b.x, `${d.name} ${b.id}`).toBeGreaterThanOrEqual(panelLeft - 1);
+        expect(b.x + b.w, `${d.name} ${b.id}`).toBeLessThanOrEqual(panelLeft + g.panelW + 1);
+        expect(b.y, `${d.name} ${b.id}`).toBeGreaterThanOrEqual(panelTop - 1);
+        expect(b.y + b.h, `${d.name} ${b.id}`).toBeLessThanOrEqual(panelTop + g.panelH + 1);
+        expect(b.h, `${d.name} ${b.id} 高度`).toBeGreaterThanOrEqual(34);
+        // 绘制与命中共用同一份矩形 → 中心点必须能命中自己
+        expect(hitRect(g.buttons, b.x + b.w / 2, b.y + b.h / 2)?.id).toBe(b.id);
+        if (i > 0) {
+          expect(g.buttons[i - 1].y + g.buttons[i - 1].h).toBeLessThanOrEqual(b.y + 1);
+        }
+      }
+      // 整块面板不溢出视口
+      expect(panelLeft).toBeGreaterThanOrEqual(0);
+      expect(panelTop).toBeGreaterThanOrEqual(0);
+      expect(panelLeft + g.panelW).toBeLessThanOrEqual(l.width + 1);
+      expect(panelTop + g.panelH).toBeLessThanOrEqual(l.height + 1);
     }
   });
 
