@@ -6,7 +6,7 @@
  */
 
 import { COLS, ROWS, EXIT_ROW, type Piece } from '@rush-hour/core';
-import type { CanvasRenderingContext2DLike } from '@rush-hour/platform';
+import type { CanvasRenderingContext2DLike, ImageLike } from '@rush-hour/platform';
 import { CAR_PALETTE, COLORS, FONTS, METRICS, derive, type ColorInfo } from './theme';
 import { cellToPx, dialogGeometry, dialogScale, hudButtons, type Layout } from './layout';
 
@@ -20,6 +20,11 @@ export interface CarWithOffset {
   dragging?: boolean;
   /** 不可移动（顶住感）时变暗 */
   dimmed?: boolean;
+  /**
+   * 该车的卡通贴图。缺省或未加载完成时，drawCar 会回落为矢量绘制。
+   * 这是"素材可选增强"契约的落点：贴图永远不能让车画不出来。
+   */
+  sprite?: ImageLike;
 }
 
 /**
@@ -165,6 +170,135 @@ export function drawExit(ctx: CanvasRenderingContext2DLike, layout: Layout, puls
 }
 
 export function drawCar(
+  ctx: CanvasRenderingContext2DLike,
+  layout: Layout,
+  car: CarWithOffset,
+): void {
+  if (car.sprite) {
+    drawCarSprite(ctx, layout, car, car.sprite);
+    return;
+  }
+  drawCarVector(ctx, layout, car);
+}
+
+/**
+ * 贴图版车辆 —— 尺寸策略。
+ *
+ * 横向车：**双向铺满**占用矩形（允许非等比拉伸）。
+ * 纵向车：**长轴等比铺满**（保持素材比例）。
+ *
+ * 为什么两类车用不同策略：
+ *
+ *   侧视素材的宽高比在 1.29~1.68 之间，而 2 格车位是 112:48 ≈ 2.33:1
+ *   的扁矩形 —— 两者比例天然对不上。若坚持等比，就只能在「宽度空一截」
+ *   与「高度空一截」之间二选一，无论选哪个车都显小。
+ *   实测等比最优解只画到 78×46，占不满 112×48 的车位。
+ *
+ *   卡通美术对横向拉伸的容忍度很高（圆润造型 + 粗描边，拉宽 20% 后
+ *   看起来只是"这辆车更胖一点"，不会露馅），因此横向车直接拉伸铺满。
+ *
+ *   纵向车不能同样处理：纵向车位是 48:112 的竖长条，而正面视角素材
+ *   本身已接近该比例（0.42~0.69），等比即可铺满长轴，没有必要拉伸 ——
+ *   且纵向拉伸会让车头明显变长，一眼看出变形。
+ *
+ * 朝右问题：素材的侧视图全部朝右，而横向车可能向左/向右。红车必须朝右
+ *   （它就是"开出右边出口"的那辆），其余横向车统一保持朝右 —— 卡通游戏里
+ *   车辆朝向不一致反而更像玩具，且翻转会连带把驾驶员的脸也镜像，不自然。
+ */
+function drawCarSprite(
+  ctx: CanvasRenderingContext2DLike,
+  layout: Layout,
+  car: CarWithOffset,
+  sprite: ImageLike,
+): void {
+  const { piece } = car;
+  const cell = layout.cell;
+  const inset = METRICS.carInset + 1;
+  const base = cellToPx(layout, piece.r, piece.c);
+  const boxW = (piece.dir === 'H' ? piece.len * cell : cell) - inset * 2;
+  const boxH = (piece.dir === 'V' ? piece.len * cell : cell) - inset * 2;
+  const bx = base.x + inset + car.dx;
+  const by = base.y + inset + car.dy;
+
+  let dw: number;
+  let dh: number;
+
+  if (piece.dir === 'H') {
+    // 横向：长轴（宽）与短轴（高）各自铺满，允许非等比拉伸 —— 但有上限。
+    //
+    // 上限的意义：车位是 2.17:1，素材却在 1.29~1.68 之间，硬铺满会让
+    // 最扁的拖拉机被拉宽 67%，车轮变成明显的椭圆。限制到 STRETCH_MAX 后，
+    // 超出上限的车改为等比缩放（宽度略空一点），观感从"变形"回到"小车"。
+    dh = boxH * SPRITE_SHORT_FILL;
+    dw = boxW * SPRITE_LONG_FILL;
+
+    const ratio = sprite.width / sprite.height;
+    const naturalW = dh * ratio; // 按当前高度等比缩放时该有的宽度
+    if (dw > naturalW * STRETCH_MAX) dw = naturalW * STRETCH_MAX;
+  } else {
+    // 纵向：长轴（高）铺满，短轴按素材比例 —— 保持不变形。
+    dh = boxH * SPRITE_LONG_FILL;
+    dw = dh * (sprite.width / sprite.height);
+    const maxW = boxW * SPRITE_SHORT_FILL;
+    if (dw > maxW) {
+      dw = maxW;
+      dh = dw * (sprite.height / sprite.width);
+    }
+  }
+
+  const dx = bx + (boxW - dw) / 2;
+  const dy = by + (boxH - dh) / 2;
+
+  ctx.save();
+  if (car.dimmed) ctx.globalAlpha = 0.55;
+
+  // 拖拽中：先垫一层白色描边光晕，把"正在操作"的车从底板上托起来。
+  // 矢量版靠 fillStyle + shadow 实现，贴图版用 shadowColor 模拟同等观感。
+  if (car.dragging) {
+    ctx.shadowColor = 'rgba(255,255,255,0.9)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 0;
+    ctx.drawImage(sprite, dx, dy, dw, dh);
+    ctx.shadowBlur = 0;
+  }
+
+  // 落地投影：贴图自带描边与体积感，这里只补一层柔和的地面阴影。
+  // 拖拽时投影加重，与矢量版保持同一套"提起"反馈。
+  ctx.shadowColor = car.dragging ? 'rgba(33,37,41,0.34)' : 'rgba(33,37,41,0.16)';
+  ctx.shadowBlur = car.dragging ? Math.max(8, cell * 0.3) : Math.max(3, cell * 0.12);
+  ctx.shadowOffsetY = car.dragging ? Math.max(3, cell * 0.1) : Math.max(1, cell * 0.04);
+  ctx.drawImage(sprite, dx, dy, dw, dh);
+
+  ctx.restore();
+}
+
+/**
+ * 贴图沿**长轴**方向的铺满比例（长轴 = 横向车的宽 / 纵向车的高）。
+ *
+ * 取 1.0 而非留白，是因为素材已被 build-car-assets.mjs 裁到内容包围盒，
+ * 卡通描边本身就画在素材边界内侧 —— 铺满即"车轮贴格线"，正是想要的观感。
+ * 之前留 6% 白，直接导致车看起来比它占的格子小。
+ */
+const SPRITE_LONG_FILL = 1;
+/**
+ * 贴图沿**短轴**方向（横向车的高 / 纵向车的宽）的铺满比例。
+ *
+ * 略小于 1：相邻两行/两列的格子之间本就有 inset 间隙，短轴铺满会让
+ * 上下两排车的描边几乎相接。留 4% 让车与车之间有一道可见的缝。
+ */
+const SPRITE_SHORT_FILL = 0.96;
+/**
+ * 横向车允许的最大横向拉伸倍率。
+ *
+ * 卡通美术能容忍一定程度的横向拉伸（圆润造型 + 粗描边，胖一点不露馅），
+ * 但超过这个倍率就开始"露馅"：车轮从正圆变成明显椭圆、车身细节被横向扯开。
+ * 实测拖拉机素材比例 1.29，若硬铺满 2.17 的车位要拉伸 1.67 倍，
+ * 轮子已明显变形。1.35 是"看起来更饱满"与"看不出被拉过"的平衡点。
+ */
+const STRETCH_MAX = 1.35;
+
+/** 矢量绘制的车辆（素材缺失时的回落路径，也是 P0–P2 的原始外观） */
+function drawCarVector(
   ctx: CanvasRenderingContext2DLike,
   layout: Layout,
   car: CarWithOffset,

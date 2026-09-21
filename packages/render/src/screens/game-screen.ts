@@ -21,7 +21,7 @@ import {
   type MoveDir,
   type SaveV1,
 } from '@rush-hour/core';
-import type { Platform, PointerEventLike } from '@rush-hour/platform';
+import type { ImageLike, Platform, PointerEventLike } from '@rush-hour/platform';
 import { Animator } from '../anim';
 import {
   drawBackground,
@@ -48,6 +48,12 @@ import {
   type Layout,
 } from '../layout';
 import { InputController, type InputIntent } from '../input';
+import {
+  loadCarSprites,
+  spriteForPiece,
+  type CarSpriteMap,
+  type CarSpriteName,
+} from '../car-art';
 import { METRICS } from '../theme';
 import { recordClear } from '@rush-hour/core';
 import { TutorialOverlay } from './tutorial-overlay';
@@ -92,6 +98,16 @@ export class GameScreen implements Screen {
   private colors = new Map<string, ColorInfo>();
   private readonly grid = new Int16Array(36);
 
+  /**
+   * 卡通车辆贴图（可选增强，见 car-art.ts）。
+   * 加载是异步的，且**不阻塞进入游戏**：首帧先画矢量车，图到位后自动换成贴图。
+   * 加载失败则永久保持矢量绘制 —— 素材缺失绝不能表现为白屏。
+   */
+  private sprites: CarSpriteMap = new Map();
+  private spritesRequested = false;
+  /** 关卡内 每辆车 已解析好的贴图名（随关卡切换重算，避免每帧重复哈希） */
+  private spriteNames: Array<CarSpriteName | null> = [];
+
   private lastTime = 0;
   private rafHandle: number | null = null;
   /**
@@ -134,6 +150,37 @@ export class GameScreen implements Screen {
     this.unsubs.push(deps.platform.onHide(() => this.flushSave()));
 
     this.buildSolver();
+    this.spriteNames = this.resolveSpriteNames();
+    void this.ensureSprites();
+  }
+
+  /**
+   * 加载车辆贴图（幂等）。
+   *
+   * 刻意做成 fire-and-forget：素材是"锦上添花"，让它挡住 enter() 会让
+   * 首屏出现一个等图片的空窗期。图到了之后下一帧 render() 自然就用上了，
+   * 玩家看到的是"车从色块变成卡通图"，不会有加载态。
+   */
+  private async ensureSprites(): Promise<void> {
+    if (this.spritesRequested) return;
+    this.spritesRequested = true;
+    try {
+      this.sprites = await loadCarSprites((src) => this.deps.platform.image.load(src));
+    } catch {
+      // loadCarSprites 本身已吞掉单张失败；这里兜住实现方意外抛错，保证不冒泡
+      this.sprites = new Map();
+    }
+  }
+
+  /** 为当前关卡的每辆车解析贴图名（关卡切换时重算一次） */
+  private resolveSpriteNames(): Array<CarSpriteName | null> {
+    return this.game.board.pieces.map((p, i) => spriteForPiece(p, i));
+  }
+
+  /** 取某辆车的贴图；未加载完成时返回 undefined，drawCar 会回落矢量绘制 */
+  private spriteAt(index: number): ImageLike | undefined {
+    const name = this.spriteNames[index];
+    return name ? this.sprites.get(name) : undefined;
   }
 
   // ---------------------------------------------------------------- Screen 生命周期
@@ -609,6 +656,7 @@ export class GameScreen implements Screen {
     this.resetTransient();
     this.game = this.buildGame(level);
     this.colors = pickColors(this.game.board.pieces);
+    this.spriteNames = this.resolveSpriteNames();
     this.input = this.createInput();
     this.buildSolver();
     this.deps.save.current = { levelId: level.id, moves: [], startedAt: Date.now() };
@@ -829,6 +877,8 @@ export class GameScreen implements Screen {
         dragging: isDragging,
         // 拖拽中且完全无路可走 → 变暗，给出"顶住感"
         dimmed: isDragging && !canMove && this.ghosts.length === 0,
+        // 贴图未就绪时是 undefined → drawCar 自动回落矢量绘制
+        sprite: this.spriteAt(i),
       };
       drawCar(ctx, layout, car);
     }

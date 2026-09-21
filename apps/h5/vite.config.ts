@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
+const CAR_ASSETS_DIR = fileURLToPath(new URL('../../packages/render/assets', import.meta.url));
+
 const r = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 /** 构建期把关卡包内联进产物：data/levels.json 进包，levels.verify.json 绝不进包 */
@@ -22,6 +24,12 @@ export default defineConfig({
       '@rush-hour/app-bootstrap': r('../../packages/app-bootstrap/src/index.ts'),
     },
   },
+  /**
+   * 车辆贴图是运行期按 URL 加载的（不走 import），因此 Vite 不会自动收集它们，
+   * 必须显式把 packages/render/assets 映射到 /assets 下。
+   * dev 与 preview 都要挂：否则 dev 能显示车、构建产物打开却全是色块。
+   */
+  publicDir: CAR_ASSETS_DIR,
   server: {
     host: true,
     port: 5173,

@@ -5,7 +5,7 @@
  * 之间语义不一致，且失败时很难看出是哪一步炸的。这里逐步输出并记录退出码。
  */
 import { execFileSync } from 'node:child_process';
-import { readFileSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,10 +40,30 @@ const h5Bundle = join(root, 'apps', 'h5', 'dist', 'game.js');
 const wxBundle = join(root, 'apps', 'minigame', 'dist', 'minigame', 'game.js');
 
 const checks = [];
+/**
+ * 递归求目录体积。车辆贴图不进 game.js，而是作为独立文件随包发布，
+ * 因此"包体"必须是 代码 + 资源 之和 —— 只量 game.js 会漏掉全部素材。
+ */
+const dirSize = (dir) => {
+  if (!existsSync(dir)) return 0;
+  let total = 0;
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, e.name);
+    total += e.isDirectory() ? dirSize(p) : statSync(p).size;
+  }
+  return total;
+};
+
 if (existsSync(h5Bundle)) {
   const src = readFileSync(h5Bundle, 'utf8');
   const size = statSync(h5Bundle).size;
   checks.push([`H5 包体 ${(size / 1024).toFixed(1)} KB ≤ 350KB（游戏代码预算）`, size <= 350 * 1024]);
+  // 素材单独设预算：H5 是网络加载，宽松些但不允许无上限
+  const h5Assets = dirSize(join(root, 'apps', 'h5', 'dist', 'assets'));
+  checks.push([
+    `H5 素材 ${(h5Assets / 1024).toFixed(1)} KB ≤ 300KB（贴图预算）`,
+    h5Assets <= 300 * 1024,
+  ]);
   // levels.verify.json 含每关解答，绝不能进包
   checks.push(['H5 产物不含 solution 字段（levels.verify.json 未进包）', !/"solution"\s*:/.test(src)]);
   checks.push(['H5 产物不含 eval(', !src.includes('eval(')]);
@@ -53,8 +73,12 @@ if (existsSync(h5Bundle)) {
 }
 
 if (existsSync(wxBundle)) {
-  const size = statSync(wxBundle).size;
-  checks.push([`小游戏包体 ${(size / 1024).toFixed(1)} KB ≤ 4MB（主包预算）`, size <= 4 * 1024 * 1024]);
+  const wxDir = join(root, 'apps', 'minigame', 'dist', 'minigame');
+  const size = dirSize(wxDir);
+  checks.push([
+    `小游戏主包 ${(size / 1024).toFixed(1)} KB ≤ 4MB（代码+素材）`,
+    size <= 4 * 1024 * 1024,
+  ]);
 } else {
   checks.push(['小游戏产物存在', false]);
 }

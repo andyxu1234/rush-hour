@@ -16,6 +16,8 @@ import type {
   AudioApi,
   CanvasLike,
   HttpApi,
+  ImageApi,
+  ImageLike,
   LoginResult,
   Platform,
   PointerEventLike,
@@ -88,6 +90,54 @@ class WxAudioApi implements AudioApi {
   }
 }
 
+/**
+ * 小游戏位图加载。
+ *
+ * 与 H5 的差异（这就是 ImageApi 必须抽象出来的原因）：
+ *   - 没有 `new Image()`，只能 `wx.createImage()`；
+ *   - 图片必须是**包内相对路径**（不支持 http(s) 任意地址，除非配置了合法域名）；
+ *   - onload / onerror 回调签名与浏览器不同。
+ *
+ * 同 H5：失败一律 resolve(null)，交由 render 层降级为代码绘制。
+ */
+class WxImageApi implements ImageApi {
+  private cache = new Map<string, Promise<ImageLike | null>>();
+
+  load(src: string): Promise<ImageLike | null> {
+    const hit = this.cache.get(src);
+    if (hit) return hit;
+    const p = this.loadUncached(src);
+    this.cache.set(src, p);
+    return p;
+  }
+
+  private loadUncached(src: string): Promise<ImageLike | null> {
+    if (typeof wx === 'undefined' || typeof wx.createImage !== 'function') {
+      return Promise.resolve(null);
+    }
+    return new Promise<ImageLike | null>((resolve) => {
+      let settled = false;
+      const done = (v: ImageLike | null) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(v);
+      };
+      const timer = setTimeout(() => done(null), WX_IMAGE_TIMEOUT_MS);
+      try {
+        const img = wx.createImage();
+        img.onload = () => done(img);
+        img.onerror = () => done(null);
+        img.src = src;
+      } catch {
+        done(null);
+      }
+    });
+  }
+}
+
+const WX_IMAGE_TIMEOUT_MS = 6000;
+
 class WxStorageApi implements StorageApi {
   get(key: string): string | null {
     try {
@@ -157,6 +207,7 @@ export class WxPlatform implements Platform {
   readonly name = 'wx' as const;
   readonly storage: StorageApi = new WxStorageApi();
   readonly audio: AudioApi = new WxAudioApi();
+  readonly image: ImageApi = new WxImageApi();
   readonly ads: AdsApi = new WxAdsApi();
   readonly http: HttpApi;
 

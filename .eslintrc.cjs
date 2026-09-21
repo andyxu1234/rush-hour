@@ -27,7 +27,11 @@ module.exports = {
           { name: 'document', message: 'core/render 禁止直接访问 document，请通过 Platform 接口' },
           { name: 'wx', message: 'core/render 禁止直接访问 wx，请通过 Platform 接口' },
           { name: 'localStorage', message: 'core/render 禁止直接访问 localStorage，请通过 Platform.storage' },
-          { name: 'Image', message: 'core/render 禁用位图 Image，美术全部代码绘制' },
+          {
+            name: 'Image',
+            message:
+              'core/render 禁止直接构造位图，请通过 Platform.image.load() 获取 ImageLike（H5/wx 构造方式不同）',
+          },
         ],
         'no-restricted-syntax': [
           'error',

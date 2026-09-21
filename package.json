@@ -11,8 +11,15 @@
     "node": ">=18"
   },
   "scripts": {
-    "dev": "node node_modules/vite/bin/vite.js --config apps/h5/vite.config.ts",
-    "build": "npm run build:h5 && npm run build:wx",
+    "assets": "node scripts/build-car-assets.mjs",
+    "site:assets": "node scripts/build-site-assets.mjs",
+    "site:shots": "node scripts/capture-screens.mjs",
+    "site:play": "node scripts/build-site-play.mjs",
+    "site:serve": "node scripts/serve-site.mjs",
+    "site:check": "node scripts/check-site.mjs",
+    "site:build": "npm run assets && npm run site:assets && npm run build:h5 && npm run site:play",
+    "dev": "npm run assets && node node_modules/vite/bin/vite.js --config apps/h5/vite.config.ts",
+    "build": "npm run assets && npm run build:h5 && npm run build:wx",
     "build:h5": "node node_modules/vite/bin/vite.js build apps/h5",
     "build:wx": "node apps/minigame/build.mjs",
     "preview": "node node_modules/vite/bin/vite.js preview apps/h5 --port 4173",
@@ -33,6 +40,7 @@
     "@vitest/coverage-v8": "^1.6.0",
     "esbuild": "^0.21.5",
     "eslint": "^8.57.0",
+    "sharp": "^0.35.4",
     "typescript": "^5.5.3",
     "vitest": "^1.6.0"
   }

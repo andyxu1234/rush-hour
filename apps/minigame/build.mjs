@@ -11,7 +11,16 @@
  *   dist/minigame/project.config.json
  */
 
-import { readFileSync, writeFileSync, mkdirSync, rmSync, statSync } from 'node:fs';
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  rmSync,
+  statSync,
+  cpSync,
+  existsSync,
+  readdirSync,
+} from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { build } from 'esbuild';
@@ -84,8 +93,31 @@ writeFileSync(
   ),
 );
 
+// ---- 车辆贴图：小游戏按包内相对路径加载（assets/cars/*.png）----
+// 与 H5 的 publicDir 等价，只是小游戏没有 public 概念，必须手动拷进产物目录。
+// 素材在 packages/render/assets（由 scripts/build-car-assets.mjs 生成）。
+const carAssetsSrc = join(root, 'packages', 'render', 'assets');
+let carAssetsBytes = 0;
+if (existsSync(carAssetsSrc)) {
+  const carAssetsDst = join(outDir, 'assets');
+  cpSync(carAssetsSrc, carAssetsDst, { recursive: true });
+  const walk = (dir) => {
+    let total = 0;
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, e.name);
+      total += e.isDirectory() ? walk(p) : statSync(p).size;
+    }
+    return total;
+  };
+  carAssetsBytes = walk(carAssetsDst);
+  console.log(`[build:wx] 车辆贴图已拷入 assets/ = ${(carAssetsBytes / 1024).toFixed(1)} KB`);
+} else {
+  console.warn('[build:wx] 未找到车辆贴图，运行 node scripts/build-car-assets.mjs 生成');
+}
+
 const bytes = statSync(join(outDir, 'game.js')).size;
 const kb = (bytes / 1024).toFixed(1);
+const totalMainBytes = bytes + carAssetsBytes;
 
 // 包体报告 + 断言
 const parts = [];
@@ -95,12 +127,20 @@ for (const [file, info] of Object.entries(result.metafile.outputs)) {
 console.log(`[build:wx] game.js = ${kb} KB`);
 console.log(parts.join('\n'));
 
-if (bytes > MAX_MAIN_BYTES) {
+// 包体口径：代码 + 贴图。贴图必须计入，否则"代码没超、整体超了"会被漏掉。
+if (totalMainBytes > MAX_MAIN_BYTES) {
   console.error(
-    `[build:wx] 包体超限：${kb} KB > ${(MAX_MAIN_BYTES / 1024).toFixed(0)} KB（docs/02 §6 预算）`,
+    `[build:wx] 包体超限：${(totalMainBytes / 1024).toFixed(1)} KB > ${(
+      MAX_MAIN_BYTES / 1024
+    ).toFixed(0)} KB（docs/02 §6 预算）`,
   );
   process.exit(1);
 }
+console.log(
+  `[build:wx] 主包合计 = ${(totalMainBytes / 1024).toFixed(1)} KB（代码 ${kb} KB + 贴图 ${(
+    carAssetsBytes / 1024
+  ).toFixed(1)} KB）`,
+);
 
 // 验证红线：产物中不得出现 eval / new Function（小游戏环境禁止）
 const bundle = readFileSync(join(outDir, 'game.js'), 'utf8');

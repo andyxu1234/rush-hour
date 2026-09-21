@@ -66,6 +66,25 @@ export interface CanvasRenderingContext2DLike {
   clip(): void;
   clearRect(x: number, y: number, w: number, h: number): void;
   fillRect(x: number, y: number, w: number, h: number): void;
+  /** 位图绘制。9 参重载用于裁剪/缩放（图集与等比铺图都依赖它） */
+  drawImage(
+    img: ImageLike,
+    dx: number,
+    dy: number,
+    dw: number,
+    dh: number,
+  ): void;
+  drawImage(
+    img: ImageLike,
+    sx: number,
+    sy: number,
+    sw: number,
+    sh: number,
+    dx: number,
+    dy: number,
+    dw: number,
+    dh: number,
+  ): void;
   strokeRect(x: number, y: number, w: number, h: number): void;
   fillText(text: string, x: number, y: number, maxWidth?: number): void;
   measureText(text: string): { width: number };
@@ -81,6 +100,21 @@ export interface CanvasGradientLike {
 export interface CanvasPatternLike {
   // 结构占位，本轮不使用位图纹理
   readonly __pattern?: never;
+}
+
+/**
+ * 已解码完成的位图（结构上与 HTMLImageElement / wx Image 的可用面一致）。
+ *
+ * 为什么不让 render 层直接拿 Image：
+ *   小游戏环境没有浏览器的 `Image`，只有 `wx.createImage()`；两端唯一共有的
+ *   是"可以交给 ctx.drawImage 的对象"。因此这里只暴露画布真正需要的成员，
+ *   render 层永远见不到宿主的图片构造器（.eslintrc.cjs 亦强制）。
+ */
+export interface ImageLike {
+  readonly width: number;
+  readonly height: number;
+  /** 图片是否已解码完成（未完成时绘制会抛错或画空白） */
+  readonly complete: boolean;
 }
 
 export type CanvasLineCapLike = 'butt' | 'round' | 'square';
@@ -139,6 +173,26 @@ export interface AudioApi {
   isMuted(): boolean;
 }
 
+/**
+ * 位图资源能力。
+ *
+ * 为什么必须放在 Platform 而不是 render 层内：
+ *   H5 端图片走 `new Image()` + `<img src>`；小游戏端只能走 `wx.createImage()`。
+ *   两者的构造方式完全不同，但它们解出的对象都能交给 ctx.drawImage。
+ *   render 层只接收 ImageLike，因此一份渲染代码两端通用。
+ *
+ * 契约：load() 失败时**必须 resolve 为 null 而不是 reject**。
+ *   素材缺失属于可降级情形（回落为代码绘制），不应该让整局加载失败。
+ */
+export interface ImageApi {
+  /**
+   * 加载并解码一张位图。
+   * @param src 资源地址（H5 为相对 URL，小游戏为包内相对路径）
+   * @returns 解码完成的位图；失败/超时为 null（调用方须有降级路径）
+   */
+  load(src: string): Promise<ImageLike | null>;
+}
+
 // ---------------------------------------------------------------- HTTP / 登录
 
 export interface HttpRequestOptions {
@@ -193,6 +247,8 @@ export interface Platform {
 
   storage: StorageApi;
   audio: AudioApi;
+  /** 位图加载。无素材时由实现返回 null，渲染层自动回落为代码绘制 */
+  image: ImageApi;
   http: HttpApi;
   ads: AdsApi;
 

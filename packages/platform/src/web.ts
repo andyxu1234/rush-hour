@@ -10,6 +10,8 @@ import type {
   AudioApi,
   CanvasLike,
   HttpApi,
+  ImageApi,
+  ImageLike,
   LoginResult,
   Platform,
   PointerEventLike,
@@ -138,6 +140,51 @@ class WebAudioApi implements AudioApi {
   }
 }
 
+/**
+ * H5 位图加载。
+ *
+ * 关键点：**失败必须 resolve(null)，不能 reject**。
+ *   素材缺失是可降级情形（render 层会回落为代码绘制），若 reject 会顺着
+ *   Promise 链把整个屏幕初始化打断，表现为"打开游戏白屏"。
+ *
+ * 同时带一个超时兜底：某些浏览器在图片 404 时不触发 error（例如被 Service
+ * Worker 拦截），没有超时会导致加载 Promise 永远挂起。
+ */
+class WebImageApi implements ImageApi {
+  private cache = new Map<string, Promise<ImageLike | null>>();
+
+  load(src: string): Promise<ImageLike | null> {
+    const hit = this.cache.get(src);
+    if (hit) return hit;
+    const p = this.loadUncached(src);
+    this.cache.set(src, p);
+    return p;
+  }
+
+  private loadUncached(src: string): Promise<ImageLike | null> {
+    const Ctor = (globalThis as any).Image as (new () => HTMLImageElement) | undefined;
+    if (!Ctor) return Promise.resolve(null);
+
+    return new Promise<ImageLike | null>((resolve) => {
+      const img = new Ctor();
+      let settled = false;
+      const done = (v: ImageLike | null) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(v);
+      };
+      const timer = setTimeout(() => done(null), IMAGE_TIMEOUT_MS);
+
+      img.onload = () => done(img);
+      img.onerror = () => done(null);
+      img.src = src;
+    });
+  }
+}
+
+const IMAGE_TIMEOUT_MS = 6000;
+
 class WebStorageApi implements StorageApi {
   get(key: string): string | null {
     try {
@@ -183,6 +230,7 @@ export class WebPlatform implements Platform {
   readonly name = 'h5' as const;
   readonly storage: StorageApi = new WebStorageApi();
   readonly audio: AudioApi = new WebAudioApi();
+  readonly image: ImageApi = new WebImageApi();
   readonly ads: AdsApi = new WebAdsApi();
   readonly http: HttpApi;
 
